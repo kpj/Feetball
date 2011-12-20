@@ -14,6 +14,8 @@ class player(pygame.sprite.Sprite):
 		self.area = screen.get_rect()
 		self.rect.topleft = posX, posY
 
+		self.field = self.area.bottom - 50
+
 		self.x = posX
 		self.y = posY
 		self.width = width
@@ -23,75 +25,80 @@ class player(pygame.sprite.Sprite):
 		self.velocity = vector(0, 0)
 		self.accel = vector(0, 0)
 		self.maxSpeed = 5
-		self.jumpStren = 40
+		self.jumpStren = 8
 		self.oldRect = None
 
 		self.isJumping = False
 		self.isMoving = False
-		self.shouldStop = False
 
-	def update(self, friction):
-		self.friction = friction
-
+	def update(self):
 		self.move()
 
-		if not self.isMoving and self.shouldStop:
-			print "stopit"
-			self.stop()
-		self.show()
+#		self.show()
 
 	def show(self):
 		print 'V: ',self.velocity.vector()
 		print 'A: ',self.accel.vector()
 		print
 
-	def stop(self):
-		if self.accel.x > 0:
-			self.accel.changeX(-self.friction)
-		if self.accel.x < 0:
-			self.accel.changeX(self.friction)
-		if abs(self.velocity.x) == 0:
-			self.shouldStop = False
+	def slow(self):
+		if self.velocity < 0:
+			self.accel.setX(self.friction)
+		elif self.velocity > 0:
+			self.accel.setX(-self.friction)
+		else:
+			print "Should stand now..."
+
+	def handleFriction(self, friction):
+		if not self.isMoving:
+			#print "stops"
+			pass
+
+	def handleGravity(self, gravity):
+		if self.rect.bottom >= self.field:
+			self.velocity.setY(0)
+			self.accel.setY(0)
+
+		if self.rect.bottom < self.field and self.isJumping:
+			self.accel.changeY(gravity)
+		elif self.rect.bottom >= self.field:
+			self.isJumping = False
 
 	def move(self):
 		self.handleVelocity()
 		newpos = self.rect.move((self.velocity.x, self.velocity.y))
-#		if not self.area.contains(newpos):
-#			print "Moved outside of the screen..."
 		self.oldRect = self.rect
 		self.rect = newpos
 
 	def handleVelocity(self):
-		if self.velocity.x <= self.maxSpeed:
-			self.velocity = self.velocity.addVector(self.accel)
-		if self.velocity.x >= -self.maxSpeed:
-			self.velocity = self.velocity.addVector(self.accel)
+		self.velocity.addVector(self.accel)
 
 	def steer(self, button, move):
 		if button == self.keys['LEFT'] or button == self.keys['RIGHT']:
-			if move:
+			if move: 
+				# keydown
 				if button == self.keys['LEFT']:
 					self.isMoving = True
 					self.accelerate('LEFT')
 				elif button == self.keys['RIGHT']:
 					self.isMoving = True
 					self.accelerate('RIGHT')
-			else:
+			else: 
+				# keyup
 				self.isMoving = False
-				self.shouldStop = True
 
 		if button == self.keys['UP'] and not self.isJumping:
 			self.jump()
 
 	def accelerate(self, where):
 		if where == "RIGHT":
-			self.accel.changeX(1)
+			self.accel.changeX(0.2)
 		elif where == "LEFT":
-			self.accel.changeX(-1)
+			self.accel.changeX(-0.2)
 
 	def jump(self):
 		self.isJumping = True
-		self.movement.changeY(-self.jumpStren)
+		self.accel.changeY(-self.jumpStren)
 
 	def collide(self, withWhat):
 		collision = self.rect.collidelistall(withWhat)
@@ -123,12 +130,9 @@ class world(object):
 
 	def update(self):
 		for o in self.objList:
-			o.update(self.friction)
-#			if o.rect.bottom <= self.height:
-#					o.movement.changeY(self.gravity)
-#					print o.rect.bottom , self.height
-#					if o.rect.bottom >= self.height:
-#						o.isJumping = False
+			o.update()
+			o.handleFriction(self.friction)
+			o.handleGravity(self.gravity)
 
 	def steer(self, k, b):
 		for o in self.objList:
@@ -178,7 +182,8 @@ class vector(object):
 		return '[%f, %f]' % (self.x, self.y)
 
 	def addVector(self, vec):
-		return vector(self.x + vec.x, self.y + vec.y)
+		self.x = self.x + vec.x
+		self.y = self.y + vec.y
 
 
 class handleImg(object):

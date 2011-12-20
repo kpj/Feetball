@@ -50,7 +50,7 @@ while running:
 		if e.type == MOUSEBUTTONDOWN:
 			print pygame.mouse.get_pos()
 
-	w.checkCollision()
+#	w.checkCollision()
 	w.update()
 
 	screen.blit(bg, (0, 0))
