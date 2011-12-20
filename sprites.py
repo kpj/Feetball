@@ -1,5 +1,6 @@
 import pygame
 from pygame.locals import *
+from useful import *
 
 class player(pygame.sprite.Sprite):
 	'''
@@ -30,29 +31,34 @@ class player(pygame.sprite.Sprite):
 
 		self.isJumping = False
 		self.isMoving = False
+		self.isSlowing = False
+		self.movingDirection = ''
 
 	def update(self):
 		self.move()
 
-#		self.show()
+		self.show()
 
 	def show(self):
 		print 'V: ',self.velocity.vector()
 		print 'A: ',self.accel.vector()
 		print
 
-	def slow(self):
-		if self.velocity < 0:
-			self.accel.setX(self.friction)
-		elif self.velocity > 0:
-			self.accel.setX(-self.friction)
-		else:
-			print "Should stand now..."
-
 	def handleFriction(self, friction):
-		if not self.isMoving:
-			print "stops"
-			pass
+		if not self.isMoving and self.isSlowing:
+			if self.movingDirection == 'RIGHT':
+				self.movingDirection = 'LEFT'
+			elif self.movingDirection == 'LEFT':
+				self.movingDirection = 'RIGHT'
+
+		if self.movingDirection == 'RIGHT' and self.velocity < 0:
+			self.accel.setX(0)
+			self.isSlowing = False
+		if self.movingDirection == 'LEFT' and self.velocity > 0:
+			self.accel.setX(0)
+			self.isSlowing = False
+
+		self.accelerate()
 
 	def handleGravity(self, gravity):
 		if self.rect.bottom >= self.field:
@@ -79,21 +85,24 @@ class player(pygame.sprite.Sprite):
 				# keydown
 				if button == self.keys['LEFT']:
 					self.isMoving = True
-					self.accelerate('LEFT')
+					self.movingDirection = 'LEFT'
+					self.accelerate()
 				elif button == self.keys['RIGHT']:
 					self.isMoving = True
-					self.accelerate('RIGHT')
+					self.movingDirection = 'RIGHT'
+					self.accelerate()
 			else: 
 				# keyup
 				self.isMoving = False
+				self.isSlowing = True
 
 		if button == self.keys['UP'] and not self.isJumping:
 			self.jump()
 
-	def accelerate(self, where):
-		if where == "RIGHT":
+	def accelerate(self):
+		if self.movingDirection == "RIGHT":
 			self.accel.changeX(0.2)
-		elif where == "LEFT":
+		elif self.movingDirection == "LEFT":
 			self.accel.changeX(-0.2)
 
 	def jump(self):
@@ -155,54 +164,6 @@ class keySet(object):
 
 	def getSet(self, num):
 		return self.sets[num]
-
-
-class vector(object):
-	def __init__(self, x, y):
-		self.x = float(x)
-		self.y = float(y)
-
-	def setX(self, x):
-		self.x = x
-
-	def setY(self, y):
-		self.y = y
-
-	def changeX(self, x):
-		self.x += x
-
-	def changeY(self, y):
-		self.y += y
-
-	def makeZero(self):
-		self.x = 0
-		self.y = 0
-
-	def vector(self):
-		return '[%f, %f]' % (self.x, self.y)
-
-	def addVector(self, vec):
-		self.x = self.x + vec.x
-		self.y = self.y + vec.y
-
-
-class handleImg(object):
-	'''
-	Class to handle images
-	'''
-	def load_image(self, path, colorkey=None):
-		try:
-			image = pygame.image.load(path)
-		except pygame.error, message:
-			print 'Cannot load image:', path
-			raise SystemExit, message
-		image = image.convert()
-		if colorkey is not None:
-			if colorkey is -1:
-				colorkey = image.get_at((0,0))
-				image.set_colorkey(colorkey, RLEACCEL)
-		return image, image.get_rect()
-
 
 
 
