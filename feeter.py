@@ -25,12 +25,12 @@ w = world(width, height - 50)
 w.addObject(
 player(50, height - 100, os.path.join('img', 'p1.png'), 50, 50, s.getSet(0))
 )
-w.addObject(
-player(width - 100, height - 100, os.path.join('img', 'p2.png'), 50, 50, s.getSet(1))
-)
+#w.addObject(
+#player(width - 100, height - 100, os.path.join('img', 'p2.png'), 50, 50, s.getSet(1))
+#)
 
 objT = tuple(w.getObjects())
-allsprites = pygame.sprite.RenderPlain(objT)
+allsprites = pygame.sprite.RenderUpdates(objT)
 
 running = True
 while running:
@@ -39,13 +39,15 @@ while running:
 	for e in pygame.event.get():
 		if e.type == QUIT:
 			running = False
-		elif e.type == KEYDOWN:
+
+		if e.type == KEYDOWN:
 			w.steer(e.key, True)
 			if e.key == K_ESCAPE:
 				running = False
 		elif e.type == KEYUP:
 			w.steer(e.key, False)
-		elif e.type == MOUSEBUTTONDOWN:
+
+		if e.type == MOUSEBUTTONDOWN:
 			print pygame.mouse.get_pos()
 
 	w.checkCollision()
