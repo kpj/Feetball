@@ -20,14 +20,17 @@ pygame.display.flip()
 clock = pygame.time.Clock()
 
 s = keySet()
-
-p1 = player(50, height - 100, os.path.join('img', 'p1.png'), 50, 50, s.getSet(0))
-p2 = player(width - 50, height - 100, os.path.join('img', 'p2.png'), 50, 50, s.getSet(1))
-allsprites = pygame.sprite.RenderPlain((p1, p2))
-
 w = world(width, height - 50)
-w.addObject(p1)
-w.addObject(p2)
+
+w.addObject(
+player(50, height - 100, os.path.join('img', 'p1.png'), 50, 50, s.getSet(0))
+)
+w.addObject(
+player(width - 100, height - 100, os.path.join('img', 'p2.png'), 50, 50, s.getSet(1))
+)
+
+objT = tuple(w.getObjects())
+allsprites = pygame.sprite.RenderPlain(objT)
 
 running = True
 while running:
@@ -45,8 +48,11 @@ while running:
 		elif e.type == MOUSEBUTTONDOWN:
 			print pygame.mouse.get_pos()
 
+	w.checkCollision()
 	w.update()
 
 	screen.blit(bg, (0, 0))
 	allsprites.draw(screen)
 	pygame.display.flip()
+
+print "Aborting game..."

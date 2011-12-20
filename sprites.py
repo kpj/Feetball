@@ -21,19 +21,21 @@ class player(pygame.sprite.Sprite):
 		self.keys = keys
 
 		self.speed = 4
-		self.jump = 40
+		self.jumpStren = 40
+		self.oldRect = None
 
 		self.isJumping = False
 		self.isMoving = False
 
 	def update(self):
 		if self.isMoving:
-			self._move(self.speed)
+			self.move(self.speed)
 
-	def _move(self, hori = 0, verti = 0):
+	def move(self, hori = 0, verti = 0):
 		newpos = self.rect.move((hori, verti))
 		if not self.area.contains(newpos):
 			print "Moved outside of the screen..."
+		self.oldRect = self.rect
 		self.rect = newpos
 
 	def steer(self, button, move):
@@ -51,8 +53,19 @@ class player(pygame.sprite.Sprite):
 				self.isMoving = False
 
 		if button == self.keys['UP'] and not self.isJumping: # w
-			self.isJumping = True
-			self._move(0, -self.jump)
+			self.jump()
+
+	def jump(self):
+		self.isJumping = True
+		self.move(0, -self.jumpStren)
+
+	def collide(self, withWhat):
+		collision = self.rect.collidelistall(withWhat)
+		if collision:
+			self.isMoving = False
+			self.rect = self.oldRect
+		if self.rect.collidelistall(withWhat):
+			self.jump()
 
 
 class world(object):
@@ -70,11 +83,14 @@ class world(object):
 	def addObject(self, obj):
 		self.objList.append(obj)
 
+	def getObjects(self):
+		return self.objList
+
 	def update(self):
 		for o in self.objList:
 			o.update()
 			if o.rect.bottom < self.height:
-					o._move(0, self.gravity)
+					o.move(0, self.gravity)
 					if o.rect.bottom >= self.height:
 						o.isJumping = False
 
@@ -82,13 +98,19 @@ class world(object):
 		for o in self.objList:
 			o.steer(k, b)
 				
+	def checkCollision(self):
+		tmp = []
+		for o in self.objList:
+			tmp = self.objList[:]
+			tmp.remove(o)
+			o.collide(tmp)
 
 class keySet(object):
 	def __init__(self):
 		self.sets = []
 
-		self.sets.append({'UP':119, 'RIGHT':100, 'LEFT':97})
-		self.sets.append({'UP':273, 'RIGHT':275, 'LEFT':276})
+		self.sets.append({'UP':119, 'RIGHT':100, 'LEFT':97}) # wasd
+		self.sets.append({'UP':273, 'RIGHT':275, 'LEFT':276})# arrows
 
 	def getSet(self, num):
 		return self.sets[num]
