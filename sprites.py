@@ -1,4 +1,4 @@
-import pygame
+import pygame, sys
 from pygame.locals import *
 from useful import *
 
@@ -27,8 +27,8 @@ class player(pygame.sprite.Sprite):
 		self.accel = vector(0, 0)
 		self.maxSpeed = 5
 		self.jumpStren = 8
-		self.oldRect = None
 
+		self.oldRect = None
 		self.isJumping = False
 		self.isMoving = False
 		self.isSlowing = False
@@ -51,14 +51,22 @@ class player(pygame.sprite.Sprite):
 			elif self.movingDirection == 'LEFT':
 				self.movingDirection = 'RIGHT'
 
-		if self.movingDirection == 'RIGHT' and self.velocity < 0:
+		print self.movingDirection
+
+		if self.movingDirection == 'LEFT' and self.velocity <= 0:
+			print "INNNNN"
 			self.accel.setX(0)
+			self.velocity.setX(0)
 			self.isSlowing = False
-		if self.movingDirection == 'LEFT' and self.velocity > 0:
+		if self.movingDirection == 'RIGHT' and self.velocity >= 0:
 			self.accel.setX(0)
+			self.velocity.setX(0)
 			self.isSlowing = False
 
-		self.accelerate()
+		if self.velocity.x == 0:
+			self.isSlowing = False
+
+		self.accelerate(1)
 
 	def handleGravity(self, gravity):
 		if self.rect.bottom >= self.field:
@@ -86,11 +94,10 @@ class player(pygame.sprite.Sprite):
 				if button == self.keys['LEFT']:
 					self.isMoving = True
 					self.movingDirection = 'LEFT'
-					self.accelerate()
 				elif button == self.keys['RIGHT']:
 					self.isMoving = True
 					self.movingDirection = 'RIGHT'
-					self.accelerate()
+				self.accelerate(0.2)
 			else: 
 				# keyup
 				self.isMoving = False
@@ -99,11 +106,11 @@ class player(pygame.sprite.Sprite):
 		if button == self.keys['UP'] and not self.isJumping:
 			self.jump()
 
-	def accelerate(self):
+	def accelerate(self, how):
 		if self.movingDirection == "RIGHT":
-			self.accel.changeX(0.2)
+			self.accel.changeX(how)
 		elif self.movingDirection == "LEFT":
-			self.accel.changeX(-0.2)
+			self.accel.changeX(-how)
 
 	def jump(self):
 		self.isJumping = True

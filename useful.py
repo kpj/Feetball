@@ -1,4 +1,4 @@
-import pygame
+import pygame, math
 from pygame.locals import *
 
 class vector(object):
@@ -28,6 +28,9 @@ class vector(object):
 	def addVector(self, vec):
 		self.x = self.x + vec.x
 		self.y = self.y + vec.y
+
+	def length(self):
+		return math.sqrt(math.pow(self.x, 2) + math.pow(self.y, 2))
 
 
 class handleImg(object):
