@@ -19,8 +19,11 @@ pygame.display.flip()
 
 clock = pygame.time.Clock()
 
-p1 = player(50, height - 100, os.path.join('img', 'p1.png'))
+p1 = player(50, height - 100, os.path.join('img', 'p1.png'), 50, 50)
 allsprites = pygame.sprite.RenderPlain((p1))
+
+w = world(width, height - 50)
+w.addObject(p1)
 
 running = True
 while running:
@@ -38,7 +41,7 @@ while running:
 		elif e.type == MOUSEBUTTONDOWN:
 			print pygame.mouse.get_pos()
 
-	allsprites.update()
+	w.update()
 
 	screen.blit(bg, (0, 0))
 	allsprites.draw(screen)

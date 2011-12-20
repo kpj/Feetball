@@ -5,7 +5,7 @@ class player(pygame.sprite.Sprite):
 	'''
 	Class to handle several players
 	'''
-	def __init__(self, posX, posY, path2pic):
+	def __init__(self, posX, posY, path2pic, width, height):
 		pygame.sprite.Sprite.__init__(self)
 		i = handleImg()
 
@@ -14,33 +14,74 @@ class player(pygame.sprite.Sprite):
 		self.area = screen.get_rect()
 		self.rect.topleft = posX, posY
 
+		self.x = posX
+		self.y = posY
+		self.width = width
+		self.height = height
+
 		self.speed = 4
+		self.jump = 30
+
+		self.isJumping = False
 		self.isMoving = False
 
 	def update(self):
 		if self.isMoving:
 			self._move(self.speed)
 
-	def _move(self, mover):
-		newpos = self.rect.move((mover, 0))
+	def _move(self, hori = 0, verti = 0):
+		newpos = self.rect.move((hori, verti))
 		if not self.area.contains(newpos):
 			print "Moved outside of the screen..."
 		self.rect = newpos
 
 	def steer(self, button, move):
 		if move:
-			self.isMoving = True
 			if button == 97: # a
+				self.isMoving = True
 				if self.speed > 0:
 					self.speed = -self.speed
 			elif button == 100: # d
+				self.isMoving = True
 				if self.speed < 0:
 					self.speed = -self.speed
 		else:
 			self.isMoving = False
 
+		if button == 119 and not self.isJumping: # w
+			self.isJumping = True
+			self._move(0, -self.jump)
+
+
+class world(object):
+	'''
+	Class to react to the environment
+	'''
+	def __init__(self, width, height):
+		self.gravity = 9.81
+
+		self.width = width
+		self.height = height
+		
+		self.objList = []
+
+	def addObject(self, obj):
+		self.objList.append(obj)
+
+	def update(self):
+		for o in self.objList:
+			o.update()
+			if o.rect.bottom < self.height:
+					o._move(0, 1)
+					if o.rect.bottom >= self.height:
+						o.isJumping = False
+				
+
 
 class handleImg(object):
+	'''
+	Class to handle the graphical part
+	'''
 	def load_image(self, path, colorkey=None):
 		try:
 			image = pygame.image.load(path)
