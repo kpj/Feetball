@@ -51,7 +51,7 @@ class player(pygame.sprite.Sprite):
 
 	def handleFriction(self, friction):
 		if not self.isMoving:
-			#print "stops"
+			print "stops"
 			pass
 
 	def handleGravity(self, gravity):
