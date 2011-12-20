@@ -19,11 +19,15 @@ pygame.display.flip()
 
 clock = pygame.time.Clock()
 
-p1 = player(50, height - 100, os.path.join('img', 'p1.png'), 50, 50)
-allsprites = pygame.sprite.RenderPlain((p1))
+s = keySet()
+
+p1 = player(50, height - 100, os.path.join('img', 'p1.png'), 50, 50, s.getSet(0))
+p2 = player(width - 50, height - 100, os.path.join('img', 'p2.png'), 50, 50, s.getSet(1))
+allsprites = pygame.sprite.RenderPlain((p1, p2))
 
 w = world(width, height - 50)
 w.addObject(p1)
+w.addObject(p2)
 
 running = True
 while running:
@@ -33,11 +37,11 @@ while running:
 		if e.type == QUIT:
 			running = False
 		elif e.type == KEYDOWN:
-			p1.steer(e.key, True)
+			w.steer(e.key, True)
 			if e.key == K_ESCAPE:
 				running = False
 		elif e.type == KEYUP:
-			p1.steer(e.key, False)
+			w.steer(e.key, False)
 		elif e.type == MOUSEBUTTONDOWN:
 			print pygame.mouse.get_pos()
 

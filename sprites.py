@@ -5,7 +5,7 @@ class player(pygame.sprite.Sprite):
 	'''
 	Class to handle several players
 	'''
-	def __init__(self, posX, posY, path2pic, width, height):
+	def __init__(self, posX, posY, path2pic, width, height, keys):
 		pygame.sprite.Sprite.__init__(self)
 		i = handleImg()
 
@@ -18,9 +18,10 @@ class player(pygame.sprite.Sprite):
 		self.y = posY
 		self.width = width
 		self.height = height
+		self.keys = keys
 
 		self.speed = 4
-		self.jump = 30
+		self.jump = 40
 
 		self.isJumping = False
 		self.isMoving = False
@@ -36,19 +37,20 @@ class player(pygame.sprite.Sprite):
 		self.rect = newpos
 
 	def steer(self, button, move):
-		if move:
-			if button == 97: # a
-				self.isMoving = True
-				if self.speed > 0:
-					self.speed = -self.speed
-			elif button == 100: # d
-				self.isMoving = True
-				if self.speed < 0:
-					self.speed = -self.speed
-		else:
-			self.isMoving = False
+		if button == self.keys['LEFT'] or button == self.keys['RIGHT']:
+			if move:
+				if button == self.keys['LEFT']: # a
+					self.isMoving = True
+					if self.speed > 0:
+						self.speed = -self.speed
+				elif button == self.keys['RIGHT']: # d
+					self.isMoving = True
+					if self.speed < 0:
+						self.speed = -self.speed
+			else:
+				self.isMoving = False
 
-		if button == 119 and not self.isJumping: # w
+		if button == self.keys['UP'] and not self.isJumping: # w
 			self.isJumping = True
 			self._move(0, -self.jump)
 
@@ -58,7 +60,7 @@ class world(object):
 	Class to react to the environment
 	'''
 	def __init__(self, width, height):
-		self.gravity = 9.81
+		self.gravity = 2
 
 		self.width = width
 		self.height = height
@@ -72,10 +74,24 @@ class world(object):
 		for o in self.objList:
 			o.update()
 			if o.rect.bottom < self.height:
-					o._move(0, 1)
+					o._move(0, self.gravity)
 					if o.rect.bottom >= self.height:
 						o.isJumping = False
+
+	def steer(self, k, b):
+		for o in self.objList:
+			o.steer(k, b)
 				
+
+class keySet(object):
+	def __init__(self):
+		self.sets = []
+
+		self.sets.append({'UP':119, 'RIGHT':100, 'LEFT':97})
+		self.sets.append({'UP':273, 'RIGHT':275, 'LEFT':276})
+
+	def getSet(self, num):
+		return self.sets[num]
 
 
 class handleImg(object):
