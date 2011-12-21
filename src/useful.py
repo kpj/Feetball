@@ -34,6 +34,8 @@ class vector(object):
 	def __mul__(self, var):
 		if type(var) == type(int(1)) or type(var) == type(float(1)):
 			return vector(self.x * var, self.y * var)
+		elif type(var) == type(vector(1,1)):
+			return self.x * var.x + self.y * var.y
 
 	def length(self):
 		return math.sqrt(math.pow(self.x, 2) + math.pow(self.y, 2))

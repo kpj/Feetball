@@ -22,6 +22,7 @@ class world(object):
 	def makeStuff(self):
 		self.update()
 		self.handleFriction()
+		self.checkCollision()
 
 	def update(self):
 		for o in self.objList:

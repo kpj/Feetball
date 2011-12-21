@@ -26,9 +26,10 @@ w = world(width, height - 50)
 w.addObject(
 player(50, height - 100, os.path.join('img', 'p1.png'), s.getSet(0))
 )
-#w.addObject(
-#player(width - 100, height - 100, os.path.join('img', 'p2.png'), 50, 50, s.getSet(1))
-#)
+w.addObject(
+player(width - 100, height - 100, os.path.join('img', 'p2.png'), s.getSet(1))
+)
+
 w.addObject(
 wall(50, height - 50, os.path.join('img', 'bottom.png'))
 )
@@ -58,6 +59,14 @@ while running:
 
 	screen.blit(bg, (0, 0))
 	allsprites.draw(screen)
+
+	for o in w.getObjects():
+		# For debugging
+		try:
+			pygame.draw.circle(screen, pygame.Color("black"), o.rect.center, o.r, 3)
+		except AttributeError:
+			pass
+
 	pygame.display.flip()
 
 print "Aborting game..."
