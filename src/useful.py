@@ -39,6 +39,17 @@ class vector(object):
 		return math.sqrt(math.pow(self.x, 2) + math.pow(self.y, 2))
 
 
+class keySet(object):
+	def __init__(self):
+		self.sets = []
+
+		self.sets.append({'UP':119, 'RIGHT':100, 'LEFT':97}) # wasd
+		self.sets.append({'UP':273, 'RIGHT':275, 'LEFT':276})# arrows
+
+	def getSet(self, num):
+		return self.sets[num]
+
+
 class handleImg(object):
 	'''
 	Class to handle images
@@ -54,4 +65,4 @@ class handleImg(object):
 			if colorkey is -1:
 				colorkey = image.get_at((0,0))
 				image.set_colorkey(colorkey, RLEACCEL)
-		return image, image.get_rect()
+		return image, image.get_rect(), image.get_rect().bottomright

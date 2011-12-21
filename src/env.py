@@ -28,10 +28,13 @@ class world(object):
 			o.update()
 
 	def handleFriction(self):
-		for o in self.objList:
-			if not o.isMoving:
-				o.velocity.setX(0)
-				o.accel.setX(0)
+		try:
+			for o in self.objList:
+				if not o.isMoving:
+					o.velocity.setX(0)
+					o.accel.setX(0)
+		except AttributeError:
+			pass
 
 	def steer(self, k, b):
 		for o in self.objList:

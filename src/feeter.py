@@ -24,11 +24,14 @@ s = keySet()
 w = world(width, height - 50)
 
 w.addObject(
-player(50, height - 100, os.path.join('img', 'p1.png'), 50, 50, s.getSet(0))
+player(50, height - 100, os.path.join('img', 'p1.png'), s.getSet(0))
 )
 #w.addObject(
 #player(width - 100, height - 100, os.path.join('img', 'p2.png'), 50, 50, s.getSet(1))
 #)
+w.addObject(
+wall(50, height - 50, os.path.join('img', 'bottom.png'))
+)
 
 objT = tuple(w.getObjects())
 allsprites = pygame.sprite.RenderUpdates(objT)
