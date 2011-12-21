@@ -1,6 +1,7 @@
 import pygame, sys, os
 from pygame.locals import *
 from sprites import *
+from env import *
 
 width = 600
 height = 500
@@ -50,7 +51,6 @@ while running:
 		if e.type == MOUSEBUTTONDOWN:
 			print pygame.mouse.get_pos()
 
-#	w.checkCollision()
 	w.makeStuff()
 
 	screen.blit(bg, (0, 0))
