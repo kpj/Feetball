@@ -25,6 +25,7 @@ class player(pygame.sprite.Sprite):
 
 		self.velocity = vector(0, 0)
 		self.accel = vector(0, 0)
+		self.acceleration = 0.5
 		self.maxSpeed = 5
 		self.jumpStren = 8
 
@@ -37,46 +38,12 @@ class player(pygame.sprite.Sprite):
 	def update(self):
 		self.move()
 
-		self.show()
+#		self.show()
 
 	def show(self):
 		print 'V: ',self.velocity.vector()
 		print 'A: ',self.accel.vector()
 		print
-
-	def handleFriction(self, friction):
-		if not self.isMoving and self.isSlowing:
-			if self.movingDirection == 'RIGHT':
-				self.movingDirection = 'LEFT'
-			elif self.movingDirection == 'LEFT':
-				self.movingDirection = 'RIGHT'
-
-		print self.movingDirection
-
-		if self.movingDirection == 'LEFT' and self.velocity <= 0:
-			print "INNNNN"
-			self.accel.setX(0)
-			self.velocity.setX(0)
-			self.isSlowing = False
-		if self.movingDirection == 'RIGHT' and self.velocity >= 0:
-			self.accel.setX(0)
-			self.velocity.setX(0)
-			self.isSlowing = False
-
-		if self.velocity.x == 0:
-			self.isSlowing = False
-
-		self.accelerate(1)
-
-	def handleGravity(self, gravity):
-		if self.rect.bottom >= self.field:
-			self.velocity.setY(0)
-			self.accel.setY(0)
-
-		if self.rect.bottom < self.field and self.isJumping:
-			self.accel.changeY(gravity)
-		elif self.rect.bottom >= self.field:
-			self.isJumping = False
 
 	def move(self):
 		self.handleVelocity()
@@ -85,7 +52,8 @@ class player(pygame.sprite.Sprite):
 		self.rect = newpos
 
 	def handleVelocity(self):
-		self.velocity.addVector(self.accel)
+		if abs(self.velocity.x) <= self.maxSpeed:
+			self.velocity = self.velocity + self.accel
 
 	def steer(self, button, move):
 		if button == self.keys['LEFT'] or button == self.keys['RIGHT']:
@@ -97,7 +65,7 @@ class player(pygame.sprite.Sprite):
 				elif button == self.keys['RIGHT']:
 					self.isMoving = True
 					self.movingDirection = 'RIGHT'
-				self.accelerate(0.2)
+				self.accelerate()
 			else: 
 				# keyup
 				self.isMoving = False
@@ -106,11 +74,11 @@ class player(pygame.sprite.Sprite):
 		if button == self.keys['UP'] and not self.isJumping:
 			self.jump()
 
-	def accelerate(self, how):
+	def accelerate(self):
 		if self.movingDirection == "RIGHT":
-			self.accel.changeX(how)
+			self.accel.changeX(self.acceleration)
 		elif self.movingDirection == "LEFT":
-			self.accel.changeX(-how)
+			self.accel.changeX(-self.acceleration)
 
 	def jump(self):
 		self.isJumping = True
@@ -144,11 +112,31 @@ class world(object):
 	def getObjects(self):
 		return self.objList
 
+	def makeStuff(self):
+		self.update()
+		self.handleGravity()
+		self.handleFriction()
+
 	def update(self):
 		for o in self.objList:
 			o.update()
-			o.handleFriction(self.friction)
-			o.handleGravity(self.gravity)
+
+	def handleGravity(self):
+		for o in self.objList:
+			if o.rect.bottom >= o.field:
+				o.velocity.setY(0)
+				o.accel.setY(0)
+
+			if o.rect.bottom < o.field and o.isJumping:
+				o.accel.changeY(self.gravity)
+			elif o.rect.bottom >= o.field:
+				o.isJumping = False
+
+	def handleFriction(self):
+		for o in self.objList:
+			if not o.isMoving:
+				o.velocity.setX(0)
+				o.accel.setX(0)
 
 	def steer(self, k, b):
 		for o in self.objList:

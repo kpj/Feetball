@@ -51,7 +51,7 @@ while running:
 			print pygame.mouse.get_pos()
 
 #	w.checkCollision()
-	w.update()
+	w.makeStuff()
 
 	screen.blit(bg, (0, 0))
 	allsprites.draw(screen)

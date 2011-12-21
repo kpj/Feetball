@@ -25,9 +25,8 @@ class vector(object):
 	def vector(self):
 		return '[%f, %f]' % (self.x, self.y)
 
-	def addVector(self, vec):
-		self.x = self.x + vec.x
-		self.y = self.y + vec.y
+	def __add__(self, vec):
+		return vector(self.x + vec.x, self.y + vec.y)
 
 	def length(self):
 		return math.sqrt(math.pow(self.x, 2) + math.pow(self.y, 2))
