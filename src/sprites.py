@@ -2,11 +2,11 @@ import pygame, sys, time, math
 from pygame.locals import *
 from useful import *
 
-class player(pygame.sprite.Sprite):
+class sphere(pygame.sprite.Sprite):
 	'''
 	Class to handle several players
 	'''
-	def __init__(self, posX, posY, path2pic, keys):
+	def __init__(self, posX, posY, path2pic, keys, m, what):
 		pygame.sprite.Sprite.__init__(self)
 		i = handleImg()
 		self.c = collisions()
@@ -24,7 +24,8 @@ class player(pygame.sprite.Sprite):
 		self.position = vector(self.x, self.y)
 
 		self.r = self.height/2
-		self.m = 10
+		self.m = m
+		self.what = what # True -> player ; False -> ball
 
 		self.velocity = vector(0, 0)
 		self.accel = vector(0, 0)
@@ -69,22 +70,9 @@ class player(pygame.sprite.Sprite):
 	def move(self):
 		self.handleVelocity()
 
-		tmp = self.rect.copy()
-		xCol = self.rectCollideX(tmp)
-		yCol = self.rectCollideY(tmp)
+		newpos = self.rectCollide()
 
-		if yCol:
-			# Touched some ground
-			self.isJumping = False
-
-		if not xCol and not yCol:
-			newpos = self.rect.move((self.velocity.x, self.velocity.y))
-		elif not xCol and yCol:
-			newpos = self.rect.move((self.velocity.x, 0))
-		elif not yCol and xCol:
-			newpos = self.rect.move((0, self.velocity.y))
-		else:
-			newpos = self.rect
+		self.arcCollide()
 
 		self.oldRect = self.rect
 		self.rect = newpos
@@ -107,7 +95,7 @@ class player(pygame.sprite.Sprite):
 		self.lastAccel = time.time()
 
 	def steer(self, button, move):
-		if button == self.keys['LEFT'] or button == self.keys['RIGHT']:
+		if (button == self.keys['LEFT'] or button == self.keys['RIGHT']) and self.what:
 			if move: 
 				# keydown
 				if button == self.keys['LEFT']:
@@ -133,6 +121,35 @@ class player(pygame.sprite.Sprite):
 
 	def jump(self):
 		self.velocity.setY(-self.jumpStren)
+
+	def arcCollide(self):
+		for o in self.arcs:
+			dist = (self.position - o.position).length()
+			if dist <= self.r + o.r and dist != 0:
+				pulse1 = self.velocity * self.m
+				pulse2 = o.velocity * o.m
+
+				self.velocity = pulse2 * (float(1) / self.m)
+				o.velocity = pulse1 * (float(1) / o.m)
+
+	def rectCollide(self):
+		tmp = self.rect.copy()
+		xCol = self.rectCollideX(tmp)
+		yCol = self.rectCollideY(tmp)
+
+		if yCol:
+			# Touched some ground
+			self.isJumping = False
+		if not xCol and not yCol:
+			newpos = self.rect.move((self.velocity.x, self.velocity.y))
+		elif not xCol and yCol:
+			newpos = self.rect.move((self.velocity.x, 0))
+		elif not yCol and xCol:
+			newpos = self.rect.move((0, self.velocity.y))
+		else:
+			newpos = self.rect
+
+		return newpos
 
 	def rectCollideX(self, pos):
 		for o in self.rects:

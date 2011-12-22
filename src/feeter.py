@@ -24,17 +24,30 @@ s = keySet()
 w = world(width, height - 50)
 
 w.addObject(
-player(50, height - 120, os.path.join('img', 'p1.png'), s.getSet(0))
+sphere(150, height - 120, os.path.join('img', 'p1.png'), s.getSet(0), 10, True)
 )
-#w.addObject(
-#player(width - 100, height - 120, os.path.join('img', 'p2.png'), s.getSet(1))
-#)
+w.addObject(
+sphere(width - 200, height - 120, os.path.join('img', 'p2.png'), s.getSet(1), 10, True)
+)
+
+w.addObject(
+sphere(width/2, 50, os.path.join('img', 'ball.png'), s.getSet(1), 2, False)
+)
 
 w.addObject(
 wall(50, height - 50, os.path.join('img', 'bottom.png'))
 )
 w.addObject(
-wall(200, height - 150, os.path.join('img', 'chest.png'))
+wall(0, height - 150, os.path.join('img', 'chest.png'))
+)
+w.addObject(
+wall(width - 100, height - 150, os.path.join('img', 'chest.png'))
+)
+w.addObject(
+wall(0, height - 250, os.path.join('img', 'chest.png'))
+)
+w.addObject(
+wall(width - 100, height - 250, os.path.join('img', 'chest.png'))
 )
 
 objT = tuple(w.getObjects())
@@ -63,13 +76,13 @@ while running:
 	screen.blit(bg, (0, 0))
 	allsprites.draw(screen)
 
-	for o in w.getObjects():
-		# For debugging
-		try:
-			pygame.draw.rect(screen, pygame.Color("black"), o, 3)
-			pygame.draw.circle(screen, pygame.Color("black"), o.rect.center, o.r, 3)
-		except AttributeError:
-			pass
+#	for o in w.getObjects():
+#		# For debugging
+#		try:
+#			pygame.draw.rect(screen, pygame.Color("black"), o, 3)
+#			pygame.draw.circle(screen, pygame.Color("black"), o.rect.center, o.r, 3)
+#		except AttributeError:
+#			pass
 
 	pygame.display.flip()
 
