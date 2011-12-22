@@ -2,6 +2,7 @@ import pygame, sys, os
 from pygame.locals import *
 from sprites import *
 from env import *
+from init import *
 
 width = 600
 height = 500
@@ -31,7 +32,7 @@ sphere(width - 200, height - 120, os.path.join('img', 'p2.png'), s.getSet(1), 10
 )
 
 w.addObject(
-sphere(width/2, 50, os.path.join('img', 'ball.png'), s.getSet(1), 2, False)
+sphere(width/2, 50, os.path.join('img', 'ball.png'), s.getSet(1), 8, False)
 )
 
 w.addObject(

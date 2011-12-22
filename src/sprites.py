@@ -95,7 +95,10 @@ class sphere(pygame.sprite.Sprite):
 		self.lastAccel = time.time()
 
 	def steer(self, button, move):
-		if (button == self.keys['LEFT'] or button == self.keys['RIGHT']) and self.what:
+		if not self.what:
+			return 
+
+		if (button == self.keys['LEFT'] or button == self.keys['RIGHT']):
 			if move: 
 				# keydown
 				if button == self.keys['LEFT']:
@@ -124,8 +127,10 @@ class sphere(pygame.sprite.Sprite):
 
 	def arcCollide(self):
 		for o in self.arcs:
+			scal = (o.position - self.position) * self.velocity
+
 			dist = (self.position - o.position).length()
-			if dist <= self.r + o.r and dist != 0:
+			if dist <= self.r + o.r and dist != 0 and scal > 0:
 				pulse1 = self.velocity * self.m
 				pulse2 = o.velocity * o.m
 
