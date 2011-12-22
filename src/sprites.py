@@ -50,7 +50,7 @@ class player(pygame.sprite.Sprite):
 
 		self.time = time.time()
 
-		self.show()
+#		self.show()
 
 	def tellCurrentObjects(self, arcs, rects):
 		self.arcs = arcs
@@ -121,7 +121,6 @@ class player(pygame.sprite.Sprite):
 
 	def jump(self):
 		self.velocity.setY(-3)
-		print "Jump"
 
 	def handleCollisions(self, pos):
 		for o in self.arcs:

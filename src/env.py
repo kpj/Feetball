@@ -5,7 +5,7 @@ class world(object):
 	Class to react to the environment
 	'''
 	def __init__(self, width, height):
-		self.gravity = 981
+		self.gravity = 0.0981
 		self.friction = 0.9
 
 		self.width = width
