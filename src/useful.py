@@ -41,6 +41,49 @@ class vector(object):
 		return math.sqrt(math.pow(self.x, 2) + math.pow(self.y, 2))
 
 
+class mathy(object):
+	def getClosestPointToLine(self, start, end, point):
+		A1 = end.y - start.y
+		B1 = start.x - end.x
+
+		C1 = A1 * start.x + B1 * start.y
+		C2 = -B1 * point.x + A1 * point.y
+
+		det = A1*A1 - -B1*B1
+		c = vector(0, 0)
+
+		if det != 0:
+			c.setX(float( ( A1 * C1 - B1 * C2 ) / det ))
+			c.setY(float( ( A1 * C2 - -B1 * C1) / det ))
+		else:
+			c.setX(point.x)
+			c.setY(point.y)
+
+		return c
+
+
+class collisions(mathy):
+	def __init__(self):
+		pass
+
+	def circleCollide(self, c1, c2):
+		'''
+		Return False, if no collision is detected
+		Return collision-free points, if collision is detected
+		'''
+		dist = (c1.position - c2.position).length()
+		if dist <= c1.r + c2.r and dist != 0:
+			middle = vector( (c1.x + c2.x) / 2, (c1.y + c2.y) / 2)
+			new1 = vector(middle.x + c1.r * (c1.position.x - c2.position.x) / dist, middle.y + c1.r * (c1.position.y - c2.position.y) / dist)
+			new2 = vector(middle.x + c2.r * (c2.position.x - c1.position.x) / dist, middle.y + c2.r * (c2.position.y - c1.position.y) / dist)
+			return new1, new2
+		else:
+			return False
+
+	def rectCollide(self, r1, r2):
+		return r1.colliderect(r2)
+
+
 class keySet(object):
 	def __init__(self):
 		self.sets = []

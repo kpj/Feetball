@@ -9,6 +9,7 @@ class player(pygame.sprite.Sprite):
 	def __init__(self, posX, posY, path2pic, keys):
 		pygame.sprite.Sprite.__init__(self)
 		i = handleImg()
+		self.c = collisions()
 
 		self.image, self.rect, self.surface = i.load_image(path2pic, -1)
 		self.screen = pygame.display.get_surface()
@@ -40,6 +41,9 @@ class player(pygame.sprite.Sprite):
 		self.isMoving = False
 		self.movingDirection = ''
 
+		self.arcs = []
+		self.rects = []
+
 	def update(self):
 		self.move()
 		self.updateVars()
@@ -48,8 +52,13 @@ class player(pygame.sprite.Sprite):
 
 		self.show()
 
+	def tellCurrentObjects(self, arcs, rects):
+		self.arcs = arcs
+		self.rects = rects	
+
 	def updateVars(self):
-		self.position = self.position + self.velocity
+		self.position.setX(self.rect.centerx)
+		self.position.setY(self.rect.centery)
 
 	def show(self):
 		print 'V: ',self.velocity.vector()
@@ -59,9 +68,15 @@ class player(pygame.sprite.Sprite):
 	def move(self):
 		self.handleVelocity()
 		newpos = self.rect.move((self.velocity.x, self.velocity.y))
-		if self.isFree(newpos):
-			self.oldRect = self.rect
-			self.rect = newpos
+		col = self.handleCollisions(newpos)
+
+		if col:
+			tmp = newpos.copy()
+			tmp.center = col
+			newpos = tmp
+
+		self.oldRect = self.rect
+		self.rect = newpos
 
 	def handleVelocity(self):
 		dt = self.time - self.lastAccel
@@ -72,6 +87,11 @@ class player(pygame.sprite.Sprite):
 			self.velocity.setX(self.maxSpeed)
 		elif self.velocity.x < -self.maxSpeed:
 			self.velocity.setX(-self.maxSpeed)
+
+		if self.velocity.y > self.maxSpeed:
+			self.velocity.setY(self.maxSpeed)
+		elif self.velocity.y < -self.maxSpeed:
+			self.velocity.setY(-self.maxSpeed)
 
 		self.lastAccel = time.time()
 
@@ -102,8 +122,18 @@ class player(pygame.sprite.Sprite):
 	def jump(self):
 		print "Jump"
 
-	def isFree(self, pos):
-		return True
+	def handleCollisions(self, pos):
+		for o in self.arcs:
+			col = self.c.circleCollide(self, o)
+			if col:
+				return (col[0].x, col[0].y)
+			
+		for o in self.rects:
+			col = self.c.rectCollide(pos, o.rect)
+			if col:
+				return (self.oldRect.centerx, self.oldRect.centery)
+
+		return False
 
 	def collide(self, withWhat):
 		try:
@@ -185,4 +215,5 @@ class wall(pygame.sprite.Sprite):
 	def collide(self, withWhat):
 		pass
 
-
+	def tellCurrentObjects(self, arcs, rects):
+		pass
