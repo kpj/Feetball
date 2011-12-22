@@ -29,8 +29,9 @@ class player(pygame.sprite.Sprite):
 		self.velocity = vector(0, 0)
 		self.accel = vector(0, 0)
 		self.acceleration = 50000
-		self.maxSpeed = 5
-		self.jumpStren = 1
+		self.maxSpeedX = 5
+		self.maxSpeedY = 15
+		self.jumpStren = 6
 
 		self.time = 0
 		self.lastAccel = 0
@@ -67,13 +68,23 @@ class player(pygame.sprite.Sprite):
 
 	def move(self):
 		self.handleVelocity()
-		newpos = self.rect.move((self.velocity.x, self.velocity.y))
-		col = self.handleCollisions(newpos)
 
-		if col:
-			tmp = newpos.copy()
-			tmp.center = col
-			newpos = tmp
+		tmp = self.rect.copy()
+		xCol = self.rectCollideX(tmp)
+		yCol = self.rectCollideY(tmp)
+
+		if yCol:
+			# Touched some ground
+			self.isJumping = False
+
+		if not xCol and not yCol:
+			newpos = self.rect.move((self.velocity.x, self.velocity.y))
+		elif not xCol and yCol:
+			newpos = self.rect.move((self.velocity.x, 0))
+		elif not yCol and xCol:
+			newpos = self.rect.move((0, self.velocity.y))
+		else:
+			newpos = self.rect
 
 		self.oldRect = self.rect
 		self.rect = newpos
@@ -83,15 +94,15 @@ class player(pygame.sprite.Sprite):
 
 		self.velocity = self.velocity + self.accel  * dt
 
-		if self.velocity.x > self.maxSpeed:
-			self.velocity.setX(self.maxSpeed)
-		elif self.velocity.x < -self.maxSpeed:
-			self.velocity.setX(-self.maxSpeed)
+		if self.velocity.x > self.maxSpeedX:
+			self.velocity.setX(self.maxSpeedX)
+		elif self.velocity.x < -self.maxSpeedX:
+			self.velocity.setX(-self.maxSpeedX)
 
-		if self.velocity.y > self.maxSpeed:
-			self.velocity.setY(self.maxSpeed)
-		elif self.velocity.y < -self.maxSpeed:
-			self.velocity.setY(-self.maxSpeed)
+		if self.velocity.y > self.maxSpeedY:
+			self.velocity.setY(self.maxSpeedY)
+		elif self.velocity.y < -self.maxSpeedY:
+			self.velocity.setY(-self.maxSpeedY)
 
 		self.lastAccel = time.time()
 
@@ -111,6 +122,7 @@ class player(pygame.sprite.Sprite):
 				self.isMoving = False
 
 		if button == self.keys['UP'] and not self.isJumping:
+			self.isJumping = True
 			self.jump()
 
 	def accelerate(self):
@@ -120,19 +132,22 @@ class player(pygame.sprite.Sprite):
 			self.accel.changeX(-self.acceleration)
 
 	def jump(self):
-		self.velocity.setY(-3)
+		self.velocity.setY(-self.jumpStren)
 
-	def handleCollisions(self, pos):
-		for o in self.arcs:
-			col = self.c.circleCollide(self, o)
-			if col:
-				return (col[0].x, col[0].y)
-			
+	def rectCollideX(self, pos):
 		for o in self.rects:
-			col = self.c.rectCollide(pos, o.rect)
-			if col:
-				return (self.oldRect.centerx, self.oldRect.centery)
-
+			xMove = pos.move((self.velocity.x, 0))
+			colX = self.c.rectCollide(xMove, o)
+			if colX:
+				return True
+		return False
+			
+	def rectCollideY(self, pos):
+		for o in self.rects:
+			yMove = pos.move((0, self.velocity.y))
+			colY = self.c.rectCollide(yMove, o)
+			if colY:
+				return True
 		return False
 
 

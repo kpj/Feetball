@@ -81,7 +81,10 @@ class collisions(mathy):
 			return False
 
 	def rectCollide(self, r1, r2):
-		return r1.colliderect(r2)
+		if	r1.colliderect(r2):
+			return True
+		else:
+			return False
 
 
 class keySet(object):

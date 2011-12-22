@@ -9,7 +9,7 @@ height = 500
 pygame.init()
 screen = pygame.display.set_mode((width, height))
 pygame.display.set_caption('FeeterBall')
-pygame.mouse.set_visible(1) # useless...
+pygame.mouse.set_visible(False)
 
 bg = pygame.Surface(screen.get_size())
 bg = bg.convert()
@@ -24,17 +24,17 @@ s = keySet()
 w = world(width, height - 50)
 
 w.addObject(
-player(50, height - 100, os.path.join('img', 'p1.png'), s.getSet(0))
+player(50, height - 120, os.path.join('img', 'p1.png'), s.getSet(0))
 )
-w.addObject(
-player(width - 100, height - 100, os.path.join('img', 'p2.png'), s.getSet(1))
-)
+#w.addObject(
+#player(width - 100, height - 120, os.path.join('img', 'p2.png'), s.getSet(1))
+#)
 
 w.addObject(
 wall(50, height - 50, os.path.join('img', 'bottom.png'))
 )
 w.addObject(
-wall(200, height - 100, os.path.join('img', 'chest.png'))
+wall(200, height - 150, os.path.join('img', 'chest.png'))
 )
 
 objT = tuple(w.getObjects())
@@ -66,6 +66,7 @@ while running:
 	for o in w.getObjects():
 		# For debugging
 		try:
+			pygame.draw.rect(screen, pygame.Color("black"), o, 3)
 			pygame.draw.circle(screen, pygame.Color("black"), o.rect.center, o.r, 3)
 		except AttributeError:
 			pass
