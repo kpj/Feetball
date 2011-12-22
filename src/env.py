@@ -5,7 +5,7 @@ class world(object):
 	Class to react to the environment
 	'''
 	def __init__(self, width, height):
-		self.gravity = 9.81
+		self.gravity = 981
 		self.friction = 0.9
 
 		self.width = width
@@ -35,6 +35,7 @@ class world(object):
 	def makeStuff(self):
 		self.update()
 		self.handleFriction()
+		self.handleGravity()
 
 	def update(self):
 		for o in self.objList:
@@ -49,6 +50,10 @@ class world(object):
 					o.accel.setX(0)
 		except AttributeError:
 			pass
+
+	def handleGravity(self):
+		for o in self.arcs:
+			o.velocity.changeY(self.gravity)
 
 	def steer(self, k, b):
 		for o in self.objList:

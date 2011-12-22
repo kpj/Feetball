@@ -120,6 +120,7 @@ class player(pygame.sprite.Sprite):
 			self.accel.changeX(-self.acceleration)
 
 	def jump(self):
+		self.velocity.setY(-3)
 		print "Jump"
 
 	def handleCollisions(self, pos):
@@ -135,60 +136,6 @@ class player(pygame.sprite.Sprite):
 
 		return False
 
-	def collide(self, withWhat):
-		try:
-			myPos = vector(self.rect.centerx, self.rect.centery)
-			for o in withWhat:
-				hisPos = vector(o.rect.centerx, o.rect.centery)
-				diff = hisPos - myPos
-				dist = diff.length()
-				minDist = self.r + o.r
-				if dist < minDist:
-					angle = math.atan2(diff.y, diff.x)
-					sine = math.sin(angle)
-					cose = math.cos(angle)
-
-					tmp1 = vector(0,0)
-					tmp2 = vector(cose * diff.x + sine * diff.y, cose * diff.x - sine * diff.y)
-
-					myV = vector(cose * self.velocity.x + sine * self.velocity.y, cose * self.velocity.x - sine * self.velocity.y)
-					hisV = vector(cose * o.velocity.x + sine * o.velocity.y, cose * o.velocity.x - sine * o.velocity.y)
-
-					myfV = vector(0,0)
-					myfV.setX(((self.m-o.m) * myV.x + 2 * o.m * hisV.x) / (self.m + o.m), )
-					myfV.setY(myV.y)
-
-					hisfV = vector(0,0)
-					hisfV.setX(((o.m-self.m) * hisV.x + 2 * self.m * myV.x) / (self.m + o.m), )
-					hisfV.setY(hisV.y)
-
-					tmp1.changeX(myfV.x)
-					tmp2.changeX(hisfV.x)
-
-					f1 = vector(cose * tmp1.x - sine * tmp1.y, cose * tmp1.y + sine * tmp1.x)
-					f2 = vector(cose * tmp2.x - sine * tmp2.y, cose * tmp2.y + sine * tmp2.x)
-
-					self.velocity.setX(cose * f1.x - sine * f1.y)
-					self.velocity.setY(cose * f1.y + sine * f1.x)
-					o.velocity.setX(cose * f2.x - sine * f2.y)
-					self.velocity.setY(cose * f2.y + sine * f2.x)
-
-#					targetX = myPos.x + cose * minDist
-#					targetY = myPos.y + sine * minDist
-
-#					ax = (targetX - hisPos.x) * 0.05
-#					ay = (targetY - hisPos.y) * 0.05
-
-#					print ax,ay
-#					self.velocity.changeY(-ax)
-#					self.velocity.changeY(-ay)
-
-#					o.velocity.changeX(-ax)
-#					o.velocity.changeY(-ay)
-
-		except AttributeError:
-			pass
-			
 
 class wall(pygame.sprite.Sprite):
 	def __init__(self, posX, posY, path2pic):

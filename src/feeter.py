@@ -33,6 +33,9 @@ player(width - 100, height - 100, os.path.join('img', 'p2.png'), s.getSet(1))
 w.addObject(
 wall(50, height - 50, os.path.join('img', 'bottom.png'))
 )
+w.addObject(
+wall(200, height - 100, os.path.join('img', 'chest.png'))
+)
 
 objT = tuple(w.getObjects())
 allsprites = pygame.sprite.RenderUpdates(objT)
