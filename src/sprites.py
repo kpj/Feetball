@@ -153,6 +153,10 @@ class sphere(pygame.sprite.Sprite):
 				self.velocity = pulse2 * (float(1) / self.m)
 				o.velocity = pulse1 * (float(1) / o.m)
 
+			if dist <= self.r + o.r:
+				self.rect.centerx -= self.velocity.x
+				self.rect.centery -= self.velocity.y
+
 	def rectCollide(self):
 		tmp = self.rect.copy()
 		xCol = self.rectCollideX(tmp)
