@@ -51,6 +51,13 @@ class world(object):
 		self.handleFriction()
 		self.handleGravity()
 
+	def getGoals(self):
+		output = {}
+		for o in self.arcs:
+			if o.what:
+				output[o.name] = "| "*o.goalCounter
+		return output
+
 	def update(self):
 		for o in self.objList:
 			o.tellCurrentObjects(self.arcs, self.rects)

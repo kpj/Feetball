@@ -213,7 +213,7 @@ class sphere(pygame.sprite.Sprite):
 
 	def scoreGoal(self):
 		self.goalCounter += 1
-		print "%s [%i]" % (self.name, self.goalCounter)
+#		print "%s [%i]" % (self.name, self.goalCounter)
 
 
 class wall(pygame.sprite.Sprite):
