@@ -68,9 +68,9 @@ class world(object):
 			for o in self.objList:
 				if not o.isMoving:
 					if o.inAir:
-						o.velocity.setX(o.velocity.x * self.frictionAir)
+						o.velocity.setX(o.velocity.x * self.frictionAir * (float(9)/o.m))
 					else:
-						o.velocity.setX(o.velocity.x * self.frictionGround)
+						o.velocity.setX(o.velocity.x * self.frictionGround * (float(7)/o.m))
 					o.accel.setX(0)
 		except AttributeError:
 			pass
