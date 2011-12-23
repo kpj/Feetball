@@ -1,6 +1,7 @@
 import pygame, sys, time, math
 from pygame.locals import *
 from useful import *
+from var import *
 
 class sphere(pygame.sprite.Sprite):
 	'''
@@ -29,10 +30,16 @@ class sphere(pygame.sprite.Sprite):
 
 		self.velocity = vector(0, 0)
 		self.accel = vector(0, 0)
-		self.acceleration = 50000
-		self.maxSpeedX = 5
-		self.maxSpeedY = 15
-		self.jumpStren = 6
+		if self.what:
+			self.acceleration = PLAYERACCEL
+			self.maxSpeedX = PLAYERMAXSPEEDX
+			self.maxSpeedY = PLAYERMAXSPEEDY
+			self.jumpStren = PLAYERJUMPSTREN
+		else:
+			self.acceleration = BALLACCEL
+			self.maxSpeedX = BALLMAXSPEEDX
+			self.maxSpeedY = BALLMAXSPEEDY
+			self.jumpStren = 42
 
 		self.time = 0
 		self.lastAccel = 0
@@ -43,6 +50,7 @@ class sphere(pygame.sprite.Sprite):
 		self.isMoving = False
 		self.inAir = False
 		self.movingDirection = ''
+		self.newBall = False
 
 		self.arcs = []
 		self.rects = []
@@ -58,6 +66,9 @@ class sphere(pygame.sprite.Sprite):
 	def tellCurrentObjects(self, arcs, rects):
 		self.arcs = arcs
 		self.rects = rects	
+
+	def setBallState(self, w):
+		self.newBall = w
 
 	def updateVars(self):
 		self.position.setX(self.rect.centerx)
@@ -166,7 +177,8 @@ class sphere(pygame.sprite.Sprite):
 			xMove = pos.move((self.velocity.x, 0))
 			colX = self.c.rectCollide(xMove, o)
 			if colX:
-				return True
+				if o.onCollide(self):
+					return True
 		return False
 			
 	def rectCollideY(self, pos):
@@ -174,12 +186,13 @@ class sphere(pygame.sprite.Sprite):
 			yMove = pos.move((0, self.velocity.y))
 			colY = self.c.rectCollide(yMove, o)
 			if colY:
-				return True
+				if o.onCollide(self):
+					return True
 		return False
 
 
 class wall(pygame.sprite.Sprite):
-	def __init__(self, posX, posY, path2pic):
+	def __init__(self, posX, posY, path2pic, what):
 		pygame.sprite.Sprite.__init__(self)
 		i = handleImg()
 
@@ -194,6 +207,8 @@ class wall(pygame.sprite.Sprite):
 		self.height = self.surface[1]
 		self.position = vector(self.x-self.width/2, self.y-self.height/2)
 
+		self.what = what # True -> Wall ; False -> Goal
+
 	def steer(self, rofl, xD):
 		pass
 
@@ -205,3 +220,14 @@ class wall(pygame.sprite.Sprite):
 
 	def tellCurrentObjects(self, arcs, rects):
 		pass
+
+	def onCollide(self, o):
+		if self.what:
+			# Is a wall
+			return True
+		if o.what:
+			# Is a player
+			return False
+		# Is a ball
+		o.setBallState(True)
+		return False

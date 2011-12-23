@@ -1,8 +1,9 @@
 from init import *
+from var import *
 
-i=setupWindow(600,500)
-i.init("Hi")
-i.setBG((38, 255, 92))
+i=setupWindow(WINDOWW, WINDOWH)
+i.init(WINDOWCAPTION)
+i.setBG(BGCOL)
 i.addSpheres()
 i.addWalls()
 i.game()

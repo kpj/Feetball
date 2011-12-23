@@ -1,13 +1,14 @@
-import sprites
+import sprites, os, useful, random
+from var import *
 
 class world(object):
 	'''
 	Class to react to the environment
 	'''
 	def __init__(self, width, height):
-		self.gravity = 0.00981
-		self.frictionGround = 0.9
-		self.frictionAir = 0.99
+		self.gravity = GRAVITY
+		self.frictionGround = FRICTIONG
+		self.frictionAir = FRICTIONA
 
 		self.width = width
 		self.height = height
@@ -23,6 +24,18 @@ class world(object):
 			self.arcs.append(obj)
 		except AttributeError:
 			self.rects.append(obj)
+
+	def spawnBall(self):
+		for o in self.arcs:
+			if not o.what:
+				o.rect.centerx = BALLSTARTX
+				o.rect.centery = BALLSTARTY
+				o.accel.makeZero()
+				o.velocity.makeZero()
+				x = random.uniform(float(-BALLSTARTV), float(BALLSTARTV))
+				y = random.uniform(float(-BALLSTARTV), -1)
+				o.velocity.setX(x)
+				o.velocity.setY(y)
 
 	def getObjects(self):
 		return self.objList
@@ -42,6 +55,13 @@ class world(object):
 		for o in self.objList:
 			o.tellCurrentObjects(self.arcs, self.rects)
 			o.update()
+			try:
+				if o.newBall:
+					# Need new ball
+					o.setBallState(False)
+					self.spawnBall()
+			except AttributeError:
+				pass
 
 	def handleFriction(self):
 		try:

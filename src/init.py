@@ -2,6 +2,7 @@ import pygame, os
 from pygame.locals import *
 from sprites import *
 from env import *
+from var import *
 
 class setupWindow(object):
 	def __init__(self, width, height):
@@ -10,7 +11,7 @@ class setupWindow(object):
 
 		self.clock = pygame.time.Clock()
 		self.s = keySet()
-		self.world = world(width, height - 50)
+		self.world = world(width, height)
 
 	def init(self, title):
 		pygame.init()
@@ -28,9 +29,9 @@ class setupWindow(object):
 
 	def addSpheres(self):
 		p = [
-			[150, self.height - 120, os.path.join('img', 'p1.png'), self.s.getSet(0), 10, True],
-			[self.width - 200, self.height - 120, os.path.join('img', 'p2.png'), self.s.getSet(1), 10, True],
-			[self.width/2, 50, os.path.join('img', 'ball.png'), self.s.getSet(1), 8, False]
+			[P1STARTX, P1STARTY, P1IMG, self.s.getSet(0), P1MASS, True],
+			[P2STARTX, P2STARTY, P2IMG, self.s.getSet(1), P2MASS, True],
+			[BALLSTARTX, BALLSTARTY, BALLIMG, None, BALLMASS, False]
 		]
 
 		for i in p:
@@ -38,11 +39,13 @@ class setupWindow(object):
 
 	def addWalls(self):
 		w = [
-			[50, self.height - 50, os.path.join('img', 'bottom.png')],
-			[0, self.height - 150, os.path.join('img', 'chest.png')],
-			[self.width - 100, self.height - 150, os.path.join('img', 'chest.png')],
-			[0, self.height - 250, os.path.join('img', 'chest.png')],
-			[self.width - 100, self.height - 250, os.path.join('img', 'chest.png')]
+			[50, self.height - 50, os.path.join('img', 'bottom.png'), True],
+			[0, self.height - 150, os.path.join('img', 'chest.png'), True],
+			[self.width - 100, self.height - 150, os.path.join('img', 'chest.png'), True],
+			[0, self.height - 250, os.path.join('img', 'chest.png'), True],
+			[self.width - 100, self.height - 250, os.path.join('img', 'chest.png'), True],
+			[self.width - 130, self.height - 150, os.path.join('img', 'goal.png'), False],
+			[100, self.height - 150, os.path.join('img', 'goal.png'), False],
 		]
 
 		for i in w:
