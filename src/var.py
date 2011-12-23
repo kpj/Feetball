@@ -1,4 +1,6 @@
 import os, random
+from useful import *
+s = keySet()
 
 WINDOWW = 600
 WINDOWH = 500
@@ -23,13 +25,14 @@ PLAYERACCEL = 50000
 PLAYERMAXSPEEDX = 5
 PLAYERMAXSPEEDY = 15
 PLAYERJUMPSTREN = 6
-PLAYERBOUNCE = 1
+PLAYERBOUNCE = 0.6
 
 P1ID = random.randint(1000,100000)
 P1NAME = "kpj"
 P1STARTX = 150
 P1STARTY = WINDOWH - 120
 P1IMG = os.path.join('img', 'p1.png')
+P1KEYS = s.getSet(0)
 P1MASS = 10
 
 P2ID = random.randint(1000,100000)
@@ -37,4 +40,5 @@ P2NAME = "Master"
 P2STARTX = WINDOWW - 200
 P2STARTY = WINDOWH - 120
 P2IMG = os.path.join('img', 'p2.png')
+P2KEYS = s.getSet(1)
 P2MASS = 10

@@ -3,6 +3,7 @@ from pygame.locals import *
 from sprites import *
 from env import *
 from var import *
+import objects
 
 class setupWindow(object):
 	def __init__(self, width, height):
@@ -28,27 +29,11 @@ class setupWindow(object):
 		pygame.display.flip()
 
 	def addSpheres(self):
-		p = [
-			[P1STARTX, P1STARTY, P1IMG, self.s.getSet(0), P1MASS, True, P1ID, P1NAME, PLAYERBOUNCE],
-			[P2STARTX, P2STARTY, P2IMG, self.s.getSet(1), P2MASS, True, P2ID, P2NAME, PLAYERBOUNCE],
-			[BALLSTARTX, BALLSTARTY, BALLIMG, None, BALLMASS, False, -1, "Hans", BALLBOUNCE]
-		]
-
-		for i in p:
+		for i in objects.p:
 			self.world.addObject(sphere(*i))
 
 	def addWalls(self):
-		w = [
-			[50, self.height - 50, os.path.join('img', 'bottom.png'), True, -1],
-			[0, self.height - 150, os.path.join('img', 'chest.png'), True, -1],
-			[self.width - 100, self.height - 150, os.path.join('img', 'chest.png'), True, -1],
-			[0, self.height - 250, os.path.join('img', 'chest.png'), True, -1],
-			[self.width - 100, self.height - 250, os.path.join('img', 'chest.png'), True, -1],
-			[self.width - 130, self.height - 150, os.path.join('img', 'goal.png'), False, P1ID],
-			[100, self.height - 150, os.path.join('img', 'goal.png'), False, P2ID],
-		]
-
-		for i in w:
+		for i in objects.w:
 			self.world.addObject(wall(*i))
 
 	def game(self):
