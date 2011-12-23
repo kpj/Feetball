@@ -2,7 +2,7 @@ import os, random
 from useful import *
 s = keySet()
 
-WINDOWW = 600
+WINDOWW = 1000
 WINDOWH = 500
 WINDOWCAPTION = "FeetBall"
 BGCOL = (38, 255, 92)

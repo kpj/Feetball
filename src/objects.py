@@ -40,7 +40,14 @@ p = [
 
 w = [
 	[
-		50,
+		0,
+		WINDOWH - 50,
+		os.path.join('img', 'bottom.png'),
+		True,
+		-1
+	],
+	[
+		500,
 		WINDOWH - 50,
 		os.path.join('img', 'bottom.png'),
 		True,
