@@ -28,9 +28,6 @@ class setupWindow(object):
 		self.bg = self.bg.convert()
 		self.bg.fill(color)
 
-		self.screen.blit(self.bg, (0, 0))
-		pygame.display.flip()
-
 	def addSpheres(self):
 		for i in objects.p:
 			self.world.addObject(sphere(*i))
@@ -56,7 +53,9 @@ class setupWindow(object):
 		allsprites = pygame.sprite.RenderUpdates(objT)
 
 		running = True
+		i=0
 		while running:
+			i+=1
 			self.clock.tick(60)
 
 			for e in pygame.event.get():
@@ -75,6 +74,12 @@ class setupWindow(object):
 			self.printResult(self.world.getGoals())
 
 			self.screen.blit(self.bg, (0, 0))
+
+			for o in self.world.getArcs():
+				if not o.what:
+					pass
+#					self.screen.blit(pygame.transform.rotate(o.image, i%360), (10,10))
+
 			allsprites.draw(self.screen)
 
 			pygame.display.flip()

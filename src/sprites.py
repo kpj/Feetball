@@ -12,7 +12,7 @@ class sphere(pygame.sprite.Sprite):
 		i = handleImg()
 		self.c = collisions()
 
-		self.image, self.rect, self.surface = i.load_image(path2pic, -1)
+		self.imageBase, self.rect, self.surface = i.load_image(path2pic, -1)
 		self.screen = pygame.display.get_surface()
 		self.area = self.screen.get_rect()
 		self.rect.topleft = posX, posY
@@ -55,6 +55,7 @@ class sphere(pygame.sprite.Sprite):
 		self.inAir = False
 		self.movingDirection = ''
 		self.newBall = False
+		self.degree = 0
 
 		self.arcs = []
 		self.rects = []
@@ -65,7 +66,25 @@ class sphere(pygame.sprite.Sprite):
 
 		self.time = time.time()
 
+		if not self.what:
+			if self.velocity.x <= 0:
+				self.turn(self.velocity.length())
+			else:
+				self.turn(- self.velocity.length())
+		else:
+			self.image = self.imageBase
+
 #		self.show()
+
+	def turn(self, amount):
+		oldCenter = self.rect.center
+		self.degree += amount
+		self.degree %= 360
+		self.image = pygame.transform.rotate(self.imageBase, self.degree)
+
+		# Better looking, but worse collision...
+#		self.rect = self.image.get_rect()
+#		self.rect.center = oldCenter
 
 	def tellCurrentObjects(self, arcs, rects):
 		self.arcs = arcs
@@ -112,6 +131,7 @@ class sphere(pygame.sprite.Sprite):
 
 	def steer(self, button, move):
 		if not self.what:
+			# Is ball
 			return 
 
 		if (button == self.keys['LEFT'] or button == self.keys['RIGHT']):
@@ -213,7 +233,6 @@ class sphere(pygame.sprite.Sprite):
 
 	def scoreGoal(self):
 		self.goalCounter += 1
-#		print "%s [%i]" % (self.name, self.goalCounter)
 
 
 class wall(pygame.sprite.Sprite):
