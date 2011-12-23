@@ -153,9 +153,15 @@ class sphere(pygame.sprite.Sprite):
 				self.velocity = pulse2 * (float(1) / self.m)
 				o.velocity = pulse1 * (float(1) / o.m)
 
-			if dist <= self.r + o.r:
+			while dist <= self.r + o.r and dist != 0:
 				self.rect.centerx -= self.velocity.x
 				self.rect.centery -= self.velocity.y
+				self.position -= self.velocity
+				dist = (self.position - o.position).length()
+
+	def calcRectBounceVelo(self, v):
+		change = - self.bounce * v * 0.5
+		return change
 
 	def rectCollide(self):
 		tmp = self.rect.copy()
@@ -174,16 +180,16 @@ class sphere(pygame.sprite.Sprite):
 		elif not xCol and yCol: # collision in Y
 			newpos = self.rect.move((self.velocity.x, 0))
 			# Bounce
-			self.velocity.setY(- self.bounce * self.velocity.y * 0.5)
+			self.velocity.setY(self.calcRectBounceVelo(self.velocity.y))
 		elif not yCol and xCol: # collision in X
 			newpos = self.rect.move((0, self.velocity.y))
 			# Bounce
-			self.velocity.setX(- self.bounce * self.velocity.x * 0.5)
+			self.velocity.setX(self.calcRectBounceVelo(self.velocity.x))
 		else: # collisions everywhere
 			newpos = self.rect
 			# Bounce
-			self.velocity.setX(- self.bounce * self.velocity.x * 0.5)
-			self.velocity.setY(- self.bounce * self.velocity.y * 0.5)
+			self.velocity.setX(self.calcRectBounceVelo(self.velocity.x))
+			self.velocity.setY(self.calcRectBounceVelo(self.velocity.y))
 
 		return newpos
 

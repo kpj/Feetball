@@ -18,7 +18,7 @@ BALLACCEL = 50000
 BALLMAXSPEEDX = 5
 BALLMAXSPEEDY = 15
 BALLIMG = os.path.join('img', 'ball.png')
-BALLMASS = 8
+BALLMASS = 15
 BALLBOUNCE = 1.4
 
 PLAYERACCEL = 50000
@@ -33,7 +33,7 @@ P1STARTX = 150
 P1STARTY = WINDOWH - 120
 P1IMG = os.path.join('img', 'p1.png')
 P1KEYS = s.getSet(0)
-P1MASS = 10
+P1MASS = 20
 
 P2ID = random.randint(1000,100000)
 P2NAME = "Master"
@@ -41,4 +41,4 @@ P2STARTX = WINDOWW - 200
 P2STARTY = WINDOWH - 120
 P2IMG = os.path.join('img', 'p2.png')
 P2KEYS = s.getSet(1)
-P2MASS = 10
+P2MASS = 20

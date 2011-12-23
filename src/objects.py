@@ -82,7 +82,21 @@ w = [
 		-1
 	],
 	[
+		100,
+		WINDOWH - 160,
+		os.path.join('img', 'ladder.png'),
+		True,
+		-1
+	],
+	[
 		WINDOWW - 130,
+		WINDOWH - 160,
+		os.path.join('img', 'ladder.png'),
+		True,
+		-1
+	],
+	[
+		WINDOWW - 120,
 		WINDOWH - 150,
 		os.path.join('img', 'goal.png'),
 		False,
