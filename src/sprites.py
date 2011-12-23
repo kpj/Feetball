@@ -7,7 +7,7 @@ class sphere(pygame.sprite.Sprite):
 	'''
 	Class to handle several players
 	'''
-	def __init__(self, posX, posY, path2pic, keys, m, what):
+	def __init__(self, posX, posY, path2pic, keys, m, what, pid, name, bounce):
 		pygame.sprite.Sprite.__init__(self)
 		i = handleImg()
 		self.c = collisions()
@@ -23,10 +23,14 @@ class sphere(pygame.sprite.Sprite):
 		self.height = self.surface[1]
 		self.keys = keys
 		self.position = vector(self.x, self.y)
+		self.goalCounter = 0
 
 		self.r = self.height/2
 		self.m = m
 		self.what = what # True -> player ; False -> ball
+		self.pid = pid
+		self.name = name
+		self.bounce = bounce
 
 		self.velocity = vector(0, 0)
 		self.accel = vector(0, 0)
@@ -161,14 +165,21 @@ class sphere(pygame.sprite.Sprite):
 		else:
 			self.inAir = True
 
-		if not xCol and not yCol:
+		if not xCol and not yCol: # no collision
 			newpos = self.rect.move((self.velocity.x, self.velocity.y))
-		elif not xCol and yCol:
+		elif not xCol and yCol: # collision in Y
 			newpos = self.rect.move((self.velocity.x, 0))
-		elif not yCol and xCol:
+			# Bounce
+			self.velocity.setY(- self.bounce * self.velocity.y * 0.5)
+		elif not yCol and xCol: # collision in X
 			newpos = self.rect.move((0, self.velocity.y))
-		else:
+			# Bounce
+			self.velocity.setX(- self.bounce * self.velocity.x * 0.5)
+		else: # collisions everywhere
 			newpos = self.rect
+			# Bounce
+			self.velocity.setX(- self.bounce * self.velocity.x * 0.5)
+			self.velocity.setY(- self.bounce * self.velocity.y * 0.5)
 
 		return newpos
 
@@ -190,9 +201,13 @@ class sphere(pygame.sprite.Sprite):
 					return True
 		return False
 
+	def scoreGoal(self):
+		self.goalCounter += 1
+		print "%s [%i]" % (self.name, self.goalCounter)
+
 
 class wall(pygame.sprite.Sprite):
-	def __init__(self, posX, posY, path2pic, what):
+	def __init__(self, posX, posY, path2pic, what, pid):
 		pygame.sprite.Sprite.__init__(self)
 		i = handleImg()
 
@@ -208,6 +223,9 @@ class wall(pygame.sprite.Sprite):
 		self.position = vector(self.x-self.width/2, self.y-self.height/2)
 
 		self.what = what # True -> Wall ; False -> Goal
+		self.pid = pid
+
+		self.arcs = []
 
 	def steer(self, rofl, xD):
 		pass
@@ -219,7 +237,7 @@ class wall(pygame.sprite.Sprite):
 		pass
 
 	def tellCurrentObjects(self, arcs, rects):
-		pass
+		self.arcs = arcs
 
 	def onCollide(self, o):
 		if self.what:
@@ -229,5 +247,10 @@ class wall(pygame.sprite.Sprite):
 			# Is a player
 			return False
 		# Is a ball
+
+		for o in self.arcs:
+			if self.pid == o.pid:
+				o.scoreGoal()
+
 		o.setBallState(True)
 		return False
