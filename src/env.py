@@ -5,8 +5,9 @@ class world(object):
 	Class to react to the environment
 	'''
 	def __init__(self, width, height):
-		self.gravity = 0.0981
-		self.friction = 0.9
+		self.gravity = 0.00981
+		self.frictionGround = 0.9
+		self.frictionAir = 0.99
 
 		self.width = width
 		self.height = height
@@ -46,14 +47,17 @@ class world(object):
 		try:
 			for o in self.objList:
 				if not o.isMoving:
-					o.velocity.setX(o.velocity.x * self.friction)
+					if o.inAir:
+						o.velocity.setX(o.velocity.x * self.frictionAir)
+					else:
+						o.velocity.setX(o.velocity.x * self.frictionGround)
 					o.accel.setX(0)
 		except AttributeError:
 			pass
 
 	def handleGravity(self):
 		for o in self.arcs:
-			o.velocity.changeY(self.gravity)
+			o.velocity.changeY(self.gravity * o.m)
 
 	def steer(self, k, b):
 		for o in self.objList:

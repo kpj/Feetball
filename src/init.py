@@ -1,3 +1,8 @@
+import pygame, os
+from pygame.locals import *
+from sprites import *
+from env import *
+
 class setupWindow(object):
 	def __init__(self, width, height):
 		self.width = width
@@ -70,16 +75,3 @@ class setupWindow(object):
 			pygame.display.flip()
 
 		print "Aborting game..."
-
-
-
-import pygame, os
-from pygame.locals import *
-from sprites import *
-from env import *
-
-i=setupWindow(600,500)
-i.init("Hi")
-i.setBG((38, 255, 92))
-i.addSpheres()
-i.addWalls()

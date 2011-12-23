@@ -41,6 +41,7 @@ class sphere(pygame.sprite.Sprite):
 		self.isJumping = False
 		self.jumpStart = 0
 		self.isMoving = False
+		self.inAir = False
 		self.movingDirection = ''
 
 		self.arcs = []
@@ -145,6 +146,10 @@ class sphere(pygame.sprite.Sprite):
 		if yCol:
 			# Touched some ground
 			self.isJumping = False
+			self.inAir = False
+		else:
+			self.inAir = True
+
 		if not xCol and not yCol:
 			newpos = self.rect.move((self.velocity.x, self.velocity.y))
 		elif not xCol and yCol:
