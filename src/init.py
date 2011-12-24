@@ -1,4 +1,4 @@
-import pygame, os
+import pygame, os, time
 from pygame.locals import *
 from sprites import *
 from env import *
@@ -55,14 +55,18 @@ class setupWindow(object):
 			p += vector(WINDOWW/2.0, 0)
 
 	def game(self):
+		startTime = time.time()
+
 		objT = tuple(self.world.getObjects())
 		allsprites = pygame.sprite.RenderUpdates(objT)
 
 		running = True
-		i=0
 		while running:
-			i+=1
 			self.clock.tick(60)
+			curTime = time.time()
+			runTime = curTime - startTime
+
+			pygame.draw.line(self.bg, pygame.Color("red"), (0, 3), (runTime*10, 3), 8)
 
 			for e in pygame.event.get():
 				if e.type == QUIT:
