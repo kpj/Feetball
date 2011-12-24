@@ -35,6 +35,7 @@ class world(object):
 				o.accel.makeZero()
 				o.velocity.makeZero()
 				x = random.uniform(float(-BALLSTARTV), float(BALLSTARTV))
+				# Don't just fall down
 				y = random.uniform(float(-BALLSTARTV), -1)
 				o.velocity.setX(x)
 				o.velocity.setY(y)
