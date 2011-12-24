@@ -16,14 +16,16 @@ class world(object):
 		self.objList = []
 		self.arcs = []
 		self.rects = []
+		self.feet = []
 
-	def addObject(self, obj):
+	def addObject(self, obj, typeOf):
 		self.objList.append(obj)
-		try:
-			obj.r # only circles have got a radius
+		if typeOf == "SPHERE":
 			self.arcs.append(obj)
-		except AttributeError:
+		elif typeOf == "RECT":
 			self.rects.append(obj)
+		elif typeOf == "FOOT":
+			self.feet.append(obj)
 
 	def spawnBall(self):
 		for o in self.arcs:
@@ -60,7 +62,7 @@ class world(object):
 
 	def update(self):
 		for o in self.objList:
-			o.tellCurrentObjects(self.arcs, self.rects)
+			o.tellCurrentObjects(self.arcs, self.rects, self.feet)
 			o.update()
 			try:
 				if o.newBall:

@@ -91,8 +91,8 @@ class keySet(object):
 	def __init__(self):
 		self.sets = []
 
-		self.sets.append({'UP':119, 'RIGHT':100, 'LEFT':97}) # wasd
-		self.sets.append({'UP':273, 'RIGHT':275, 'LEFT':276})# arrows
+		self.sets.append({'UP':119, 'RIGHT':100, 'LEFT':97, 'SHOOT':32}) # wasd + space
+		self.sets.append({'UP':273, 'RIGHT':275, 'LEFT':276, 'SHOOT':112})# arrows + p
 
 	def getSet(self, num):
 		return self.sets[num]

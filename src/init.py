@@ -30,11 +30,15 @@ class setupWindow(object):
 
 	def addSpheres(self):
 		for i in objects.p:
-			self.world.addObject(sphere(*i))
+			self.world.addObject(sphere(*i), "SPHERE")
+
+	def addFeet(self):
+		for i in objects.f:
+			self.world.addObject(foot(*i), "FOOT")
 
 	def addWalls(self):
 		for i in objects.w:
-			self.world.addObject(wall(*i))
+			self.world.addObject(wall(*i), "RECT")
 
 	def renderText(self, text, pos):
 		text = self.font.render(text, 1, (10, 10, 10))

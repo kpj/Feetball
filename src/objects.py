@@ -36,7 +36,16 @@ p = [
 	]
 ]
 
-
+f = [
+	[
+		P1ID,
+		os.path.join('img', 'foot.png')
+	],
+	[
+		P2ID,
+		os.path.join('img', 'foot.png')
+	]
+]
 
 w = [
 	[
