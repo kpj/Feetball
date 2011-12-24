@@ -91,6 +91,20 @@ w = [
 		-1
 	],
 	[
+		WINDOWW - 100,
+		WINDOWH - 350,
+		os.path.join('img', 'chest.png'),
+		True,
+		-1
+	],
+	[
+		0,
+		WINDOWH - 350,
+		os.path.join('img', 'chest.png'),
+		True,
+		-1
+	],
+	[
 		100,
 		WINDOWH - 160,
 		os.path.join('img', 'ladder.png'),

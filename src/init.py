@@ -17,6 +17,8 @@ class setupWindow(object):
 
 	def init(self, title):
 		pygame.init()
+#		pygame.mixer.init()
+
 		self.screen = pygame.display.set_mode((self.width, self.height))
 		pygame.display.set_caption(title)
 		pygame.mouse.set_visible(False)
@@ -78,11 +80,6 @@ class setupWindow(object):
 			self.printResult(self.world.getGoals())
 
 			self.screen.blit(self.bg, (0, 0))
-
-			for o in self.world.getArcs():
-				if not o.what:
-					pass
-#					self.screen.blit(pygame.transform.rotate(o.image, i%360), (10,10))
 
 			allsprites.draw(self.screen)
 

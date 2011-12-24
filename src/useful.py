@@ -100,7 +100,7 @@ class keySet(object):
 
 class handleImg(object):
 	'''
-	Class to handle images
+	Class to handle extern data
 	'''
 	def load_image(self, path, colorkey=None):
 		try:
@@ -114,3 +114,15 @@ class handleImg(object):
 				colorkey = image.get_at((0,0))
 				image.set_colorkey(colorkey, RLEACCEL)
 		return image, image.get_rect(), image.get_rect().bottomright
+
+	def load_sound(self, path):
+		class NoneSound:
+			def play(self): pass
+		if not pygame.mixer:
+			return NoneSound()
+		try:
+			sound = pygame.mixer.Sound(path)
+		except pygame.error, message:
+			print 'Cannot load sound:', path
+			raise SystemExit, message
+		return sound

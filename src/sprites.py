@@ -297,6 +297,8 @@ class foot(pygame.sprite.Sprite):
 		self.r = self.rect.width / 2
 		self.m = FOOTMASS
 
+#		self.shotsound = i.load_sound(SHOTSOUND)
+
 	def arcCollide(self):
 		for o in self.arcs:
 			if not o.what:
@@ -305,6 +307,9 @@ class foot(pygame.sprite.Sprite):
 
 				dist = (self.point - o.position).length()
 				if dist <= self.r + o.r and dist != 0 and scal > 0:
+					# Foot touches ball
+#					self.shotsound.play()
+					# Test sound
 					pulse1 = self.velocity * self.m
 					pulse2 = o.velocity * o.m
 
@@ -323,7 +328,7 @@ class foot(pygame.sprite.Sprite):
 		self.handleFootPosition()
 
 	def calcDiffer(self):
-		self.pointOnCircle = vector(self.midPoint.x, self.midPoint.y + self.r)
+		self.pointOnCircle = vector(self.midPoint.x, self.midPoint.y + self.r + 7)
 
 		# Very long, but working point calculation
 		xCo = (self.pointOnCircle.x - self.midPoint.x) * math.cos(self.degree) - (self.pointOnCircle.y - self.midPoint.y) * math.sin(self.degree) + self.midPoint.x
