@@ -37,6 +37,12 @@ class vector(object):
 		elif type(var) == type(vector(1,1)):
 			return self.x * var.x + self.y * var.y
 
+	def __div__(self, var):
+		if type(var) == type(int(1)) or type(var) == type(float(1)):
+			return vector(self.x / var, self.y / var)
+		elif type(var) == type(vector(1,1)):
+			return -1
+
 	def length(self):
 		return math.sqrt(math.pow(self.x, 2) + math.pow(self.y, 2))
 

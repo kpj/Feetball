@@ -17,6 +17,7 @@ class world(object):
 		self.arcs = []
 		self.rects = []
 		self.feet = []
+		self.powerups = [] 
 
 	def addObject(self, obj, typeOf):
 		self.objList.append(obj)
@@ -26,6 +27,8 @@ class world(object):
 			self.rects.append(obj)
 		elif typeOf == "FOOT":
 			self.feet.append(obj)
+		elif typeOf == "POWERUP":
+			self.powerups.append(obj)
 
 	def spawnBall(self):
 		for o in self.arcs:

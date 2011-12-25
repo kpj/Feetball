@@ -73,12 +73,38 @@ class setupWindow(object):
 			runTime = self.curTime - self.timerStart
 			self.timer2right = True
 
+	def createPowerUp(self):
+		c = random.choice(objects.u.keys())
+		# Nice position on the field
+		xx = random.uniform(400.0, WINDOWW - 400.0)
+		yy = random.uniform(900.0, WINDOWH - 800.0)
+#		print c,objects.u[c][0]
+		pu = powerup(xx, yy, os.path.join('img', 'powerup.png'), c, objects.u[c][0], objects.u[c][1])
+		self.world.addObject(pu, "POWERUP")
+		self.allsprites.add(pu)
+
+	def checkUsedPowerUps(self):
+		for o in self.world.powerups:
+			if o.taken:
+				# Has been used
+				if o.destruct:
+					# Duration is over
+					self.allsprites.remove(o)
+				else:
+					# Just put me away, but don't kill
+					o.rect.center = (-1000, -1000)
+
+	def handlePowerUps(self):
+		if round((self.curTime - self.startTime), 2) % 1 == 0:
+			self.createPowerUp()
+		self.checkUsedPowerUps()
+
 	def game(self):
 		self.startTime = time.time()
 		self.timerStart = self.startTime
 
 		objT = tuple(self.world.getObjects())
-		allsprites = pygame.sprite.RenderUpdates(objT)
+		self.allsprites = pygame.sprite.RenderPlain(objT)
 
 		self.timer2right = True
 		running = True
@@ -100,10 +126,11 @@ class setupWindow(object):
 			self.world.makeStuff()
 			self.printResult(self.world.getGoals())
 			self.handleTimeLine()
+			self.handlePowerUps()
 
 			self.screen.blit(self.bg, (0, 0))
 
-			allsprites.draw(self.screen)
+			self.allsprites.draw(self.screen)
 
 			pygame.display.flip()
 

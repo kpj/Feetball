@@ -1,13 +1,10 @@
-import pygame, sys, time, math
+import pygame, sys, time, math, os
 from pygame.locals import *
 from useful import *
 from var import *
 
 class sphere(pygame.sprite.Sprite):
-	'''
-	Class to handle several players
-	'''
-	def __init__(self, posX, posY, path2pic, keys, m, what, pid, name, bounce):
+	def __init__(self, posX=0, posY=0, path2pic=os.path.join('img', 'ball.png'), keys=None, m=1, what=True, pid=42, name='kpj', bounce=0.6):
 		pygame.sprite.Sprite.__init__(self)
 		i = handleImg()
 		self.c = collisions()
@@ -116,7 +113,7 @@ class sphere(pygame.sprite.Sprite):
 
 		newpos = self.rectCollide()
 
-		self.arcCollide2()
+		self.arcCollide() # 2, 3, 4
 
 		self.oldRect = self.rect
 		self.rect = newpos
@@ -204,12 +201,22 @@ class sphere(pygame.sprite.Sprite):
 			scal = (o.position - self.position) * self.velocity
 
 			dist = (self.position - o.position).length()
-			if dist <= self.r + o.r and dist != 0 and scal > 0:
+			minDist = self.r + o.r
+			if dist <= minDist and scal > 0:
 				pulse1 = self.velocity * self.m
 				pulse2 = o.velocity * o.m
 
 				self.velocity = pulse2 * (float(1) / self.m)
 				o.velocity = pulse1 * (float(1) / o.m)
+
+				# Won't overlap, but very strange looking + gets stuck in walls
+#				overlap = minDist - dist
+#				v = o.position - self.position
+#				v /= 2
+#				self.rect.centerx -= v.x
+#				self.rect.centery -= v.y
+#				o.rect.centerx += v.x
+#				o.rect.centery += v.y
 
 			while dist <= self.r + o.r and dist != 0:
 				self.rect.centerx -= self.velocity.x
@@ -218,7 +225,100 @@ class sphere(pygame.sprite.Sprite):
 				dist = (self.position - o.position).length()
 
 	def arcCollide2(self):
-		pass
+		for o in self.arcs:
+			# Get closest point on own movement to the other circle, to determine, if a collision would happen
+			d = self.c.getClosestPointToLine(self.position, self.position + self.velocity, o.position)
+			closestDistSQR = pow(o.position.x - d.x, 2) + pow(o.position.y - d.y, 2)
+			print closestDistSQR, pow(self.r + o.r,2)
+			if closestDistSQR <= pow(self.r + o.r,2) and closestDistSQR != 0:
+				# Is collision
+				# This gives us the point of collision
+				backdist = math.sqrt( pow(self.r+o.r,2) - closestDistSQR)
+				movementvectorlength = self.velocity.length()
+				c_x = d.x - backdist * (self.velocity.x / movementvectorlength)
+				c_y = d.y - backdist * (self.velocity.y / movementvectorlength)
+
+				# Calc norm vectors
+				collisiondist = math.sqrt(pow(o.position.x - c_x, 2) + pow(o.position.y - c_y, 2))
+				n_x = (o.position.x - c_x) / collisiondist
+				n_y = (o.position.y - c_y) / collisiondist
+
+				# Calc some other norm vectors
+				nx = (o.position.x - self.position.x) / collisiondist
+				ny = (o.position.y - self.position.y) / collisiondist
+
+				# Relate everything
+				p = 2 * (self.velocity.x * nx + self.velocity.y * n_y - o.velocity.x * nx - o.velocity.y * n_y) / (self.m + o.m)
+
+				self.velocity.setX(self.velocity.x - p * self.m * n_x)
+				self.velocity.setY(self.velocity.y - p * self.m * n_y)
+				o.velocity.setX(o.velocity.x + p * o.m * n_x)
+				o.velocity.setY(o.velocity.y + p * o.m * n_y)
+			else:
+				# No collision
+				pass
+
+	def arcCollide3(self):
+		for o in self.arcs:
+			dist = self.position - o.position
+			if dist.length() <= self.r + o.r:
+				# Is collision
+				theta = math.atan2(dist.y, dist.x)
+				sine = math.sin(theta)
+				cosine = math.cos(theta)
+
+				tmpS = [sphere(), sphere()]
+				tmpS[1].position.x = cosine * dist.x + sine * dist.y
+				tmpS[1].position.y = cosine * dist.y -sine * dist.x
+
+				tmpV = [vector(0,0), vector(0,0)]
+				tmpV[0].x = cosine * self.velocity.x + sine * self.velocity.y
+				tmpV[0].y = cosine * self.velocity.y - sine * self.velocity.x
+				tmpV[1].x = cosine * o.velocity.x + sine * o.velocity.y
+				tmpV[1].y = cosine * o.velocity.y - sine * o.velocity.x
+
+				vFinal = [vector(0,0), vector(0,0)]
+				vFinal[0].x = ((self.m - o.m) * tmpV[0].x + 2 * o.m * tmpV[1].x) / (self.m + o.m)
+				vFinal[0].y = tmpV[0].y
+				vFinal[1].x = ((o.m - self.m) * tmpV[1].x + 2 * self.m * tmpV[1].x) / (self.m + o.m)
+				vFinal[1].y = tmpV[1].y
+
+				tmpS[0].position.x += vFinal[0].x
+				tmpS[1].position.x += vFinal[1].x
+
+				bFinal = [sphere(), sphere()]
+				bFinal[0].position.x = cosine * tmpS[0].position.x - sine * tmpS[0].y
+				bFinal[0].position.y = cosine * tmpS[0].position.y + sine * tmpS[0].x
+				bFinal[1].position.x = cosine * tmpS[1].position.x - sine * tmpS[1].y
+				bFinal[1].position.y = cosine * tmpS[1].position.y + sine * tmpS[1].x
+
+				o.position.x += bFinal[1].position.x
+				o.position.y += bFinal[1].position.y
+				self.position.x += bFinal[0].position.x
+				self.position.y += bFinal[0].position.y
+
+				self.velocity.x = cosine * vFinal[0].x - sine * vFinal[0].y
+				self.velocity.y = cosine * vFinal[0].y + sine * vFinal[0].x
+				o.velocity.x = cosine * vFinal[1].x - sine * vFinal[1].y
+				o.velocity.y = cosine * vFinal[1].y + sine * vFinal[1].x
+
+	def arcCollide4(self):
+		spring = 1
+		for o in self.arcs:
+			dx = o.position.x - self.position.x
+			dy = o.position.y - self.position.y
+			minDist = self.r + o.r
+			if (o.position - self.position).length() <= minDist and (o.position - self.position).length() != 0:
+				# Is collision
+				angle = math.atan2(dy, dx)
+				targetX = self.position.x + math.cos(angle) * minDist
+				targetY = self.position.y + math.sin(angle) * minDist
+				ax = (targetX - o.position.x) * spring
+				ay = (targetY - o.position.y) * spring
+				self.velocity.x -= ax
+				self.velocity.y -= ay
+				o.velocity.x += ax
+				o.velocity.y += ay
 
 	def calcRectBounceVelo(self, v):
 		change = - self.bounce * v * 0.5
@@ -332,7 +432,7 @@ class foot(pygame.sprite.Sprite):
 
 	def calcDiffer(self):
 		# Foot shouldnt be exactly on radius
-		self.pointOnCircle = vector(self.midPoint.x, self.midPoint.y + self.r + 7)
+		self.pointOnCircle = vector(self.midPoint.x, self.midPoint.y + self.r + 13)
 
 		# Very long, but working point calculation
 		xCo = (self.pointOnCircle.x - self.midPoint.x) * math.cos(self.degree) - (self.pointOnCircle.y - self.midPoint.y) * math.sin(self.degree) + self.midPoint.x
@@ -423,3 +523,84 @@ class wall(pygame.sprite.Sprite):
 
 		o.setBallState(True)
 		return False
+
+
+class powerup(pygame.sprite.Sprite):
+	def __init__(self, posX, posY, path2pic, affect, amount, duration):
+		pygame.sprite.Sprite.__init__(self)
+		i = handleImg()
+		self.c = collisions()
+
+		self.image, self.rect, self.surface = i.load_image(path2pic, -1)
+		self.screen = pygame.display.get_surface()
+		self.area = self.screen.get_rect()
+		self.rect.topleft = posX, posY
+
+		self.x = posX
+		self.y = posY
+		self.width = self.surface[0]
+		self.height = self.surface[1]
+		self.position = vector(self.x-self.width/2, self.y-self.height/2)
+
+		self.affect = affect
+		self.amount = amount
+		self.duration = duration
+
+		self.start = time.time()
+		self.taken = False
+		self.destruct = False
+		self.player = None
+
+		self.arcs = []
+
+	def onCollide(self, o):
+		self.player = o
+		oldValue = getattr(o, self.affect)
+		newValue = oldValue + self.amount
+		if newValue >= 0:
+			setattr(o, self.affect, newValue)
+		else:
+			setattr(o, self.affect, 0)
+		self.start = time.time()
+		self.taken = True
+
+	def updateVars(self):
+		self.position.setX(self.rect.centerx)
+		self.position.setY(self.rect.centery)
+
+	def steer(self, rofl, xD):
+		pass
+
+	def resetPlayer(self):
+		if not self.destruct:
+			oldValue = getattr(self.player, self.affect)
+			setattr(self.player, self.affect, oldValue - self.amount)
+			self.destruct = True
+
+	def handleBehavior(self):
+		if self.taken:
+			# Player touched me
+			if time.time() >= self.start + self.duration:
+				# My time has come
+				self.resetPlayer()
+		else:
+			# No one touched me
+			pass
+
+	def update(self):
+		self.handleBehavior()
+		self.updateVars()
+
+		self.checkCollisions()
+
+	def checkCollisions(self):
+		for o in self.arcs:
+			if self.c.rectCollide(self.rect, o.rect) and o.what:
+				# Is colliding player
+				self.onCollide(o)
+
+	def collide(self, withWhat):
+		pass
+
+	def tellCurrentObjects(self, arcs, rects, feet):
+		self.arcs = arcs

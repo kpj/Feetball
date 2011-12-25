@@ -133,3 +133,14 @@ w = [
 		P2ID
 	],
 ]
+
+u = { # 'varibaleName': [changedByThisValue, duration]
+	'jumpStren': [3, 10],
+	'jumpStren': [-1, 10],
+	'acceleration': [3, 10],
+	'acceleration': [-1, 10],
+	'maxSpeedX': [3, 10],
+	'maxSpeedX': [-1, 10],
+	'm': [10, 10],
+	'm': [-5, 10],
+}
