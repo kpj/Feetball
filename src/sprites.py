@@ -116,7 +116,7 @@ class sphere(pygame.sprite.Sprite):
 
 		newpos = self.rectCollide()
 
-		self.arcCollide()
+		self.arcCollide2()
 
 		self.oldRect = self.rect
 		self.rect = newpos
@@ -216,6 +216,9 @@ class sphere(pygame.sprite.Sprite):
 				self.rect.centery -= self.velocity.y
 				self.position -= self.velocity
 				dist = (self.position - o.position).length()
+
+	def arcCollide2(self):
+		pass
 
 	def calcRectBounceVelo(self, v):
 		change = - self.bounce * v * 0.5
