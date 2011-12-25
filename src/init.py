@@ -54,19 +54,37 @@ class setupWindow(object):
 			self.bg.blit(text, textpos)
 			p += vector(WINDOWW/2.0, 0)
 
+	def handleTimeLine(self):
+		runTime = self.curTime - self.timerStart
+		runTime *= 10 # Just scaling
+		if self.timer2right:
+			pygame.draw.line(self.bg, pygame.Color("red"), (0, 3), (runTime, 3), 8)
+		else:
+			pygame.draw.line(self.bg, pygame.Color("blue"), (self.width, 3), (self.width - runTime, 3), 8)
+
+		if self.timer2right and runTime >= self.width:
+			# Now moves to the left side
+			self.timerStart = self.curTime
+			runTime = self.curTime - self.timerStart
+			self.timer2right = False
+		if not self.timer2right and runTime >= self.width:
+			# Now moves to the right side
+			self.timerStart = self.curTime
+			runTime = self.curTime - self.timerStart
+			self.timer2right = True
+
 	def game(self):
-		startTime = time.time()
+		self.startTime = time.time()
+		self.timerStart = self.startTime
 
 		objT = tuple(self.world.getObjects())
 		allsprites = pygame.sprite.RenderUpdates(objT)
 
+		self.timer2right = True
 		running = True
 		while running:
 			self.clock.tick(60)
-			curTime = time.time()
-			runTime = curTime - startTime
-
-			pygame.draw.line(self.bg, pygame.Color("red"), (0, 3), (runTime*10, 3), 8)
+			self.curTime = time.time()
 
 			for e in pygame.event.get():
 				if e.type == QUIT:
@@ -80,8 +98,8 @@ class setupWindow(object):
 					self.world.steer(e.key, False)
 
 			self.world.makeStuff()
-
 			self.printResult(self.world.getGoals())
+			self.handleTimeLine()
 
 			self.screen.blit(self.bg, (0, 0))
 

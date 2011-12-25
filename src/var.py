@@ -4,10 +4,10 @@ s = keySet()
 
 WINDOWW = 1000 # main-window's width
 WINDOWH = 500 # main-window's height
-WINDOWCAPTION = "FeetBall"	# main-window's caption
+WINDOWCAPTION = "FeetBall" # main-window's caption
 BGCOL = (38, 255, 92) # main-window's background-color
 
-GRAVITY = 0.00981	# Gravity in this world
+GRAVITY = 0.00981 # Gravity in this world
 FRICTIONG = 0.9 # Friction on the ground
 FRICTIONA = 0.99 # Friction in the air
 
