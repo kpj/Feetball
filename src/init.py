@@ -28,7 +28,10 @@ class setupWindow(object):
 	def setBG(self, color):
 		self.bg = pygame.Surface(self.screen.get_size())
 		self.bg = self.bg.convert()
-		self.bg.fill(color)
+		self.bgColor = color
+
+	def updateBG(self):
+		self.bg.fill(self.bgColor)
 
 	def addSpheres(self):
 		for i in objects.p:
@@ -44,7 +47,7 @@ class setupWindow(object):
 
 	def renderText(self, text, pos):
 		text = self.font.render(text, 1, (10, 10, 10))
-		textpos = text.get_rect(topleft=(pos.x,pos.y))
+		textpos = text.get_rect(center=(pos.x,pos.y)) # topleft=(pos.x,pos.y)
 		return text, textpos
 
 	def printResult(self, res):
@@ -53,6 +56,14 @@ class setupWindow(object):
 			text, textpos = self.renderText("%s: %s"%(n, i), p)
 			self.bg.blit(text, textpos)
 			p += vector(WINDOWW/2.0, 0)
+		if self.oldResult != res:
+			# A new score has been achieved + printed (delete old one)
+			self.celebrateGoal()
+			self.updateBG()
+		self.oldResult = res
+
+	def celebrateGoal(self):
+		pass
 
 	def handleTimeLine(self):
 		runTime = self.curTime - self.timerStart
@@ -107,6 +118,8 @@ class setupWindow(object):
 		self.allsprites = pygame.sprite.RenderPlain(objT)
 
 		self.timer2right = True
+		self.oldResult = ''
+
 		running = True
 		while running:
 			self.clock.tick(60)

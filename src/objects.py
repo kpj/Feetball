@@ -134,7 +134,7 @@ w = [
 	],
 ]
 
-u = { # 'varibaleName': [changedByThisValue, duration]
+u = { # 'variableName': [changedByThisValue, duration]
 	'jumpStren': [3, 10],
 	'jumpStren': [-1, 10],
 	'acceleration': [3, 10],
