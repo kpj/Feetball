@@ -24,6 +24,7 @@ class setupWindow(object):
 		pygame.mouse.set_visible(False)
 
 		self.font = pygame.font.Font(None, 36)
+		self.fontSmall = pygame.font.Font(None, 18)
 
 	def setBG(self, color):
 		self.bg = pygame.Surface(self.screen.get_size())
@@ -45,33 +46,40 @@ class setupWindow(object):
 		for i in objects.w:
 			self.world.addObject(wall(*i), "RECT")
 
-	def renderText(self, text, pos):
-		text = self.font.render(text, 1, (10, 10, 10))
+	def renderText(self, text, pos, small = False):
+		if small:
+			text = self.fontSmall.render(text, 1, (10, 10, 10))
+		else:
+			text = self.font.render(text, 1, (10, 10, 10))
 		textpos = text.get_rect(center=(pos.x,pos.y)) # topleft=(pos.x,pos.y)
-		return text, textpos
+		self.bg.blit(text, textpos)
 
 	def printResult(self, res):
 		p = vector(WINDOWW/6.0, WINDOWH/10.0)
 		for n,i in res.iteritems():
-			text, textpos = self.renderText("%s: %s"%(n, i), p)
-			self.bg.blit(text, textpos)
+			self.renderText("%s: %s"%(n, i), p)
 			p += vector(WINDOWW/2.0, 0)
 		if self.oldResult != res:
 			# A new score has been achieved + printed (delete old one)
-			self.celebrateGoal()
-			self.updateBG()
+			self.scoredGoal = True
+			self.scoredGoalTime = time.time()
 		self.oldResult = res
-
-	def celebrateGoal(self):
-		pass
 
 	def handleTimeLine(self):
 		runTime = self.curTime - self.timerStart
-		runTime *= 10 # Just scaling
+		runTime *= 100 # Just scaling
+		runHeight = 3
+
 		if self.timer2right:
-			pygame.draw.line(self.bg, pygame.Color("red"), (0, 3), (runTime, 3), 8)
+			startX = 0
+			endX = runTime
+			col = pygame.Color("red")
 		else:
-			pygame.draw.line(self.bg, pygame.Color("blue"), (self.width, 3), (self.width - runTime, 3), 8)
+			startX = self.width
+			endX = self.width - runTime
+			col = pygame.Color("blue")
+
+		pygame.draw.line(self.bg, col, (startX, runHeight), (endX, runHeight), 8)
 
 		if self.timer2right and runTime >= self.width:
 			# Now moves to the left side
@@ -83,6 +91,9 @@ class setupWindow(object):
 			self.timerStart = self.curTime
 			runTime = self.curTime - self.timerStart
 			self.timer2right = True
+
+		# Show the time
+		self.renderText(str(round(self.curTime - self.startTime, 2)), vector(endX, runHeight + 15), True)
 
 	def createPowerUp(self):
 		c = random.choice(objects.u.keys())
@@ -106,19 +117,31 @@ class setupWindow(object):
 					o.rect.center = (-1000, -1000)
 
 	def handlePowerUps(self):
-		if round((self.curTime - self.startTime), 2) % 1 == 0:
+		if round((self.curTime - self.startTime), 2) % 10 == 0:
 			self.createPowerUp()
 		self.checkUsedPowerUps()
 
+	def celebrateGoal(self):
+		if time.time() - self.scoredGoalTime > self.celebrationDuration:
+			self.scoredGoal = False
+		self.renderText("GOAL", vector(WINDOWW/2, WINDOWH/2))
+
+	def initVariables(self):
+		self.timerStart = self.startTime
+
+		self.timer2right = True
+		self.oldResult = self.world.getGoals()
+		self.scoredGoal = False
+		self.scoredGoalTime = 0
+		self.celebrationDuration = 2
+
 	def game(self):
 		self.startTime = time.time()
-		self.timerStart = self.startTime
 
 		objT = tuple(self.world.getObjects())
 		self.allsprites = pygame.sprite.RenderPlain(objT)
 
-		self.timer2right = True
-		self.oldResult = ''
+		self.initVariables()
 
 		running = True
 		while running:
@@ -136,15 +159,17 @@ class setupWindow(object):
 				elif e.type == KEYUP:
 					self.world.steer(e.key, False)
 
+			self.updateBG()
+
+			if self.scoredGoal:
+				self.celebrateGoal()
 			self.world.makeStuff()
 			self.printResult(self.world.getGoals())
 			self.handleTimeLine()
 			self.handlePowerUps()
 
 			self.screen.blit(self.bg, (0, 0))
-
 			self.allsprites.draw(self.screen)
-
 			pygame.display.flip()
 
 		print "Aborting game..."
