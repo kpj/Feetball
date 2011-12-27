@@ -218,11 +218,12 @@ class sphere(pygame.sprite.Sprite):
 #				o.rect.centerx += v.x
 #				o.rect.centery += v.y
 
-			while dist <= self.r + o.r and dist != 0:
-				self.rect.centerx -= self.velocity.x
-				self.rect.centery -= self.velocity.y
-				self.position -= self.velocity
-				dist = (self.position - o.position).length()
+				# Minimal better collision detection, but ends in heavy lagging
+#			while dist <= self.r + o.r and dist != 0:
+#				self.rect.centerx -= self.velocity.x
+#				self.rect.centery -= self.velocity.y
+#				self.position -= self.velocity
+#				dist = (self.position - o.position).length()
 
 	def arcCollide2(self):
 		for o in self.arcs:
@@ -399,6 +400,7 @@ class foot(pygame.sprite.Sprite):
 		self.player = None
 		self.r = self.rect.width / 2
 		self.m = FOOTMASS
+		self.wantsParticles = False
 
 #		self.shotsound = i.load_sound(SHOTSOUND)
 
@@ -417,6 +419,9 @@ class foot(pygame.sprite.Sprite):
 					pulse2 = o.velocity * o.m
 
 					o.velocity = pulse1 * (float(1) / o.m)
+
+					# Lets create some particles
+					self.wantsParticles = True
 
 	def steer(self, rofl, xD):
 		pass
@@ -604,3 +609,46 @@ class powerup(pygame.sprite.Sprite):
 
 	def tellCurrentObjects(self, arcs, rects, feet):
 		self.arcs = arcs
+
+
+class particle(pygame.sprite.Sprite):
+	def __init__(self, posX, posY, dur, startTime):
+		pygame.sprite.Sprite.__init__(self)
+
+		self.image = pygame.Surface((5, 5))
+		self.rect = self.image.get_rect()
+		self.screen = pygame.display.get_surface()
+		self.area = self.screen.get_rect()
+		self.rect.center = posX, posY
+
+		self.x = posX
+		self.y = posY
+		self.startTime = startTime
+		self.duration = dur
+
+		self.destruct = False
+
+		self.vx = random.uniform(-2,2)
+		self.vy = random.uniform(-1,-0.2)
+		self.ax = random.uniform(-0.2,0.2)
+		self.ay = random.uniform(0,0.3)
+
+	def update(self):
+		self.image.fill((random.randint(0,255),random.randint(0,255),random.randint(0,255)))
+
+		self.move()
+
+	def move(self):
+		self.rect.centerx += self.vx
+		self.rect.centery += self.vy
+		self.updateVelocity()
+		self.handleTime()
+
+	def handleTime(self):
+		if time.time() - self.startTime > self.duration:
+			self.destruct = True
+
+	def updateVelocity(self):
+		self.vx += self.ax
+		self.vy += self.ay
+

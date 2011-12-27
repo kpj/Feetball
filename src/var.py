@@ -13,7 +13,7 @@ FRICTIONA = 0.99 # Friction in the air
 
 SHOTSOUND = os.path.join('sound', 'shot.wav')
 
-BALLSTARTV = 6 # Maximum of ball's random start velocity
+BALLSTARTV = 5 # Maximum of ball's random start velocity
 BALLSTARTX = WINDOWW/2 # x-coordinate of ball's spawn point
 BALLSTARTY = 50 # y-coordinate of ball's spawn point
 BALLACCEL = 50000 # Useless, because ball won't accelerate on keypressure

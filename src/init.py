@@ -67,7 +67,7 @@ class setupWindow(object):
 
 	def handleTimeLine(self):
 		runTime = self.curTime - self.timerStart
-		runTime *= 100 # Just scaling
+		runTime *= 10 # Just scaling
 		runHeight = 3
 
 		if self.timer2right:
@@ -126,6 +126,20 @@ class setupWindow(object):
 			self.scoredGoal = False
 		self.renderText("GOAL", vector(WINDOWW/2, WINDOWH/2))
 
+	def handleParticles(self):
+		self.allparticles.update()
+		for o in self.world.particles:
+			o.update()
+			self.allparticles.add(o)
+			self.world.particles = []
+			print self.allparticles
+
+		# check for death
+		for o in self.allparticles.sprites():
+			if o.destruct:
+				# Should be destroyed
+				self.allparticles.remove(o)
+
 	def initVariables(self):
 		self.timerStart = self.startTime
 
@@ -140,6 +154,7 @@ class setupWindow(object):
 
 		objT = tuple(self.world.getObjects())
 		self.allsprites = pygame.sprite.RenderPlain(objT)
+		self.allparticles = pygame.sprite.RenderUpdates()
 
 		self.initVariables()
 
@@ -162,14 +177,17 @@ class setupWindow(object):
 			self.updateBG()
 
 			if self.scoredGoal:
+				# There was goal (in the last 'self.celebrationDuration')
 				self.celebrateGoal()
 			self.world.makeStuff()
 			self.printResult(self.world.getGoals())
 			self.handleTimeLine()
 			self.handlePowerUps()
+			self.handleParticles()
 
 			self.screen.blit(self.bg, (0, 0))
 			self.allsprites.draw(self.screen)
+			self.allparticles.draw(self.screen)
 			pygame.display.flip()
 
 		print "Aborting game..."

@@ -1,4 +1,4 @@
-import sprites, os, useful, random
+import sprites, os, useful, random, extras
 from var import *
 
 class world(object):
@@ -17,7 +17,8 @@ class world(object):
 		self.arcs = []
 		self.rects = []
 		self.feet = []
-		self.powerups = [] 
+		self.powerups = []
+		self.particles = []
 
 	def addObject(self, obj, typeOf):
 		self.objList.append(obj)
@@ -56,12 +57,20 @@ class world(object):
 		self.update()
 		self.handleFriction()
 		self.handleGravity()
+		self.handleParticles()
 
+	def handleParticles(self):
+		l = extras.checkForParticles(self.feet)
+		if not l:
+			# No particles needed
+			return
+		self.particles = l
+			
 	def getGoals(self):
 		output = {}
 		for o in self.arcs:
 			if o.what:
-				output[o.name] = "| "*o.goalCounter
+				output[o.name] = "| " * o.goalCounter
 		return output
 
 	def update(self):
