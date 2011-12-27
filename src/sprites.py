@@ -612,7 +612,7 @@ class powerup(pygame.sprite.Sprite):
 
 
 class particle(pygame.sprite.Sprite):
-	def __init__(self, posX, posY, dur, startTime):
+	def __init__(self, posX, posY, dur, startTime, color=(random.randint(0,255),random.randint(0,255),random.randint(0,255))):
 		pygame.sprite.Sprite.__init__(self)
 
 		self.image = pygame.Surface((5, 5))
@@ -625,6 +625,7 @@ class particle(pygame.sprite.Sprite):
 		self.y = posY
 		self.startTime = startTime
 		self.duration = dur
+		self.color = color # one color -> (x, y, z) ; blink -> False
 
 		self.destruct = False
 
@@ -634,7 +635,12 @@ class particle(pygame.sprite.Sprite):
 		self.ay = random.uniform(0,0.3)
 
 	def update(self):
-		self.image.fill((random.randint(0,255),random.randint(0,255),random.randint(0,255)))
+		if self.color:
+			# Just one color
+			self.image.fill(self.color)
+		else:
+			# Every color
+			self.image.fill((random.randint(0,255),random.randint(0,255),random.randint(0,255)))
 
 		self.move()
 

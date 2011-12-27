@@ -60,7 +60,8 @@ class world(object):
 		self.handleParticles()
 
 	def handleParticles(self):
-		l = extras.checkForParticles(self.feet)
+		# Returns particles, if foot touches ball
+		l = extras.checkForParticles(self.feet, 5, 1, pygame.Color("green"))
 		if not l:
 			# No particles needed
 			return

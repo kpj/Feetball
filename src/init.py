@@ -122,17 +122,21 @@ class setupWindow(object):
 		self.checkUsedPowerUps()
 
 	def celebrateGoal(self):
+		goalX = WINDOWW/2
+		goalY = WINDOWH/2
 		if time.time() - self.scoredGoalTime > self.celebrationDuration:
 			self.scoredGoal = False
-		self.renderText("GOAL", vector(WINDOWW/2, WINDOWH/2))
+		self.renderText("GOAL", vector(goalX, goalY))
+		for o in extras.createParticles(goalX, goalY, 4, 5, False):
+			self.allparticles.add(o)
 
 	def handleParticles(self):
 		self.allparticles.update()
 		for o in self.world.particles:
-			o.update()
+			# Add world generated particles to group
 			self.allparticles.add(o)
+			# Clear to avoid recursion
 			self.world.particles = []
-			print self.allparticles
 
 		# check for death
 		for o in self.allparticles.sprites():
