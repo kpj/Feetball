@@ -127,11 +127,16 @@ class setupWindow(object):
 		if time.time() - self.scoredGoalTime > self.celebrationDuration:
 			self.scoredGoal = False
 		self.renderText("GOAL", vector(goalX, goalY))
-		for o in extras.createParticles(goalX, goalY, 4, 5, False):
+		self.addParticles(goalX - 50, goalY, 1, 3, False)
+		self.addParticles(goalX + 50, goalY, 1, 3, False)
+
+	def addParticles(self, posX, posY, dur, num, col):
+		for o in extras.createParticles(posX, posY, dur, num, col):
 			self.allparticles.add(o)
 
 	def handleParticles(self):
 		self.allparticles.update()
+		# Just for particles, when shooting
 		for o in self.world.particles:
 			# Add world generated particles to group
 			self.allparticles.add(o)

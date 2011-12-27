@@ -615,7 +615,7 @@ class particle(pygame.sprite.Sprite):
 	def __init__(self, posX, posY, dur, startTime, color=(random.randint(0,255),random.randint(0,255),random.randint(0,255))):
 		pygame.sprite.Sprite.__init__(self)
 
-		self.image = pygame.Surface((5, 5))
+		self.image = pygame.Surface((5, 5)).convert()
 		self.rect = self.image.get_rect()
 		self.screen = pygame.display.get_surface()
 		self.area = self.screen.get_rect()
