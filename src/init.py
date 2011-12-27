@@ -200,3 +200,4 @@ class setupWindow(object):
 			pygame.display.flip()
 
 		print "Aborting game..."
+		sys.exit()
